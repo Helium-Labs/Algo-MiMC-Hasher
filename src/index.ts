@@ -1,5 +1,5 @@
 import algosdk, { bigIntToBytes, bytesToBigInt } from 'algosdk'
-import { chunks, leftPadAsMultiple, base64ToBase64url, sha256} from './util'
+import { chunks, leftPadAsMultiple, base64ToBase64url, sha256 } from './util'
 import { MimcClient } from './PuyaContracts/build/MIMC.client'
 import { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account'
 import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount'
@@ -19,8 +19,10 @@ export class MIMCClient {
 
   constructor(
     readonly algod: algosdk.Algodv2,
-    readonly signer: TransactionSignerAccount
+    readonly signer: TransactionSignerAccount,
+    mimcAppId: number = 0
   ) {
+    this.mimcAppId = mimcAppId
     this.mimcClient = new MimcClient(
       { id: this.mimcAppId, sender: signer, resolveBy: 'id' },
       this.algod
@@ -43,9 +45,6 @@ export class MIMCClient {
     const created = await createApp([])
 
     this.mimcAppId = Number(created.appId)
-    const appAddr = created.appAddress
-    console.log('app address', appAddr)
-    console.log('signer address', this.signer.addr)
     await this.mimcClient.appClient.fundAppAccount({
       amount: AlgoAmount.Algos(1)
     })
