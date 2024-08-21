@@ -1,5 +1,7 @@
 # Algo MiMC Hasher
 
+WARNING: This application is not ready for production! Use at your own risk.
+
 Algorand App that provides MIMC7 hasher functionality, implemented in an efficient manner where hashes are cached into box storage. Once cached a hash can be referenced by another Algorand app through an inner transaction call to the `verifyMimcHash` function.
 
 ⭐ PRs, issues and feedback are welcomed.
