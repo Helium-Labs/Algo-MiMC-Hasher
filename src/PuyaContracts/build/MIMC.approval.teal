@@ -164,40 +164,40 @@ initialize:
 
 // PuyaContracts.common.aggregate_gtxn_notes() -> bytes:
 aggregate_gtxn_notes:
-    // src/PuyaContracts/common.py:110-111
+    // src/PuyaContracts/common.py:7-8
     // @subroutine
     // def aggregate_gtxn_notes() -> Bytes:
     proto 0 1
-    // src/PuyaContracts/common.py:112
+    // src/PuyaContracts/common.py:9
     // data: Bytes = Bytes(b"")
     byte 0x
-    // src/PuyaContracts/common.py:113
+    // src/PuyaContracts/common.py:10
     // group_size: UInt64 = Global.group_size
     global GroupSize
-    // src/PuyaContracts/common.py:114
+    // src/PuyaContracts/common.py:11
     // for i in urange(group_size):
     int 1
     assert // Step cannot be zero
     int 0
 
 aggregate_gtxn_notes_for_header@1:
-    // src/PuyaContracts/common.py:114
+    // src/PuyaContracts/common.py:11
     // for i in urange(group_size):
     frame_dig 2
     frame_dig 1
     <
     bz aggregate_gtxn_notes_after_for@5
     frame_dig 2
-    // src/PuyaContracts/common.py:115
+    // src/PuyaContracts/common.py:12
     // note: Bytes = gtxn.Transaction(i).note
     gtxns Note
-    // src/PuyaContracts/common.py:116
+    // src/PuyaContracts/common.py:13
     // data += note
     frame_dig 0
     uncover 1
     concat
     frame_bury 0
-    // src/PuyaContracts/common.py:114
+    // src/PuyaContracts/common.py:11
     // for i in urange(group_size):
     frame_dig 2
     int 1
@@ -206,7 +206,7 @@ aggregate_gtxn_notes_for_header@1:
     b aggregate_gtxn_notes_for_header@1
 
 aggregate_gtxn_notes_after_for@5:
-    // src/PuyaContracts/common.py:117
+    // src/PuyaContracts/common.py:14
     // return data
     frame_dig 0
     frame_bury 0
@@ -442,23 +442,23 @@ multimimc7_after_if_else@7:
 
 // PuyaContracts.common.min_value(a: uint64, b: uint64) -> uint64:
 min_value:
-    // src/PuyaContracts/common.py:120-121
+    // src/PuyaContracts/common.py:17-18
     // @subroutine
     // def min_value(a: UInt64, b: UInt64) -> UInt64:
     proto 2 1
-    // src/PuyaContracts/common.py:122
+    // src/PuyaContracts/common.py:19
     // if a <= b:
     frame_dig -2
     frame_dig -1
     <=
     bz min_value_after_if_else@2
-    // src/PuyaContracts/common.py:123
+    // src/PuyaContracts/common.py:20
     // return a
     frame_dig -2
     retsub
 
 min_value_after_if_else@2:
-    // src/PuyaContracts/common.py:124
+    // src/PuyaContracts/common.py:21
     // return b
     frame_dig -1
     retsub
