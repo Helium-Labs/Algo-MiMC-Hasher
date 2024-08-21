@@ -1,6 +1,6 @@
 {
   "name": "algo-mimc-hasher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Algorand App that implements a MIMC Hasher",
   "scripts": {
     "test": "jest",
@@ -34,7 +34,7 @@
   "types": "./dist/types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mangoplane/Algo-MiMC-Hasher"
+    "url": "https://github.com/Helium-Labs/Algo-MiMC-Hasher"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
