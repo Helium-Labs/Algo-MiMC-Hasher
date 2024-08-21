@@ -34,7 +34,7 @@
   "types": "./dist/types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Helium-Labs/MiMC-Hasher"
+    "url": "https://github.com/mangoplane/Algo-MiMC-Hasher"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
