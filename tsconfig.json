@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["jest", "node"],
+    "rootDir": "src",
+    "composite": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "incremental": true,
+    "declarationMap": true,
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "noErrorTruncation": true,
+    "resolveJsonModule": true,
+    "alwaysStrict": true,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": false,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noImplicitUseStrict": false,
+    "suppressExcessPropertyErrors": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "noStrictGenericChecks": false
+  },
+  "include": [
+    "**/*" // *** The files TypeScript should type check ***
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "tests"
+  ] // *** The files to not type check ***
+}

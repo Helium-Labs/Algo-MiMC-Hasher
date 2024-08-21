@@ -1,0 +1,7 @@
+#pragma version 10
+
+PuyaContracts.MIMC.contract.MIMC.clear_state_program:
+    // src/PuyaContracts/MIMC/contract.py:37
+    // class MIMC(ARC4Contract):
+    int 1
+    return

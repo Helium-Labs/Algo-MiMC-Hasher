@@ -1,0 +1,671 @@
+#pragma version 10
+
+PuyaContracts.MIMC.contract.MIMC.approval_program:
+    // src/PuyaContracts/MIMC/contract.py:37
+    // class MIMC(ARC4Contract):
+    txna ApplicationArgs 0
+    method "create()void"
+    method "initialize()void"
+    method "multimimc7(byte[])void"
+    method "verify_hash(byte[],byte[])void"
+    uncover 4
+    match main_create_route@1 main_initialize_route@2 main_multimimc7_route@3 main_verify_hash_route@4
+    b main_switch_case_default@5
+
+main_create_route@1:
+    // src/PuyaContracts/MIMC/contract.py:38
+    // @arc4.abimethod(create="require")
+    txn OnCompletion
+    int NoOp
+    ==
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    !
+    assert // is creating
+    callsub create
+    int 1
+    return
+
+main_initialize_route@2:
+    // src/PuyaContracts/MIMC/contract.py:42
+    // @arc4.abimethod()
+    txn OnCompletion
+    int NoOp
+    ==
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    callsub initialize
+    int 1
+    return
+
+main_multimimc7_route@3:
+    // src/PuyaContracts/MIMC/contract.py:88
+    // @arc4.abimethod()
+    txn OnCompletion
+    int NoOp
+    ==
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    // src/PuyaContracts/MIMC/contract.py:37
+    // class MIMC(ARC4Contract):
+    txna ApplicationArgs 1
+    extract 2 0
+    // src/PuyaContracts/MIMC/contract.py:88
+    // @arc4.abimethod()
+    callsub multimimc7
+    int 1
+    return
+
+main_verify_hash_route@4:
+    // src/PuyaContracts/MIMC/contract.py:123
+    // @arc4.abimethod()
+    txn OnCompletion
+    int NoOp
+    ==
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    // src/PuyaContracts/MIMC/contract.py:37
+    // class MIMC(ARC4Contract):
+    txna ApplicationArgs 1
+    extract 2 0
+    txna ApplicationArgs 2
+    extract 2 0
+    // src/PuyaContracts/MIMC/contract.py:123
+    // @arc4.abimethod()
+    callsub verify_hash
+    int 1
+    return
+
+main_switch_case_default@5:
+    // src/PuyaContracts/MIMC/contract.py:37
+    // class MIMC(ARC4Contract):
+    err // reject transaction
+
+
+// PuyaContracts.MIMC.contract.MIMC.create() -> void:
+create:
+    // src/PuyaContracts/MIMC/contract.py:38-39
+    // @arc4.abimethod(create="require")
+    // def create(self) -> None:
+    proto 0 0
+    retsub
+
+
+// PuyaContracts.MIMC.contract.MIMC.initialize() -> void:
+initialize:
+    // src/PuyaContracts/MIMC/contract.py:42-43
+    // @arc4.abimethod()
+    // def initialize(self) -> None:
+    proto 0 0
+    // src/PuyaContracts/MIMC/contract.py:44-45
+    // # Read data to hash from notes
+    // data_to_hash: Bytes = aggregate_gtxn_notes()
+    callsub aggregate_gtxn_notes
+    // src/PuyaContracts/MIMC/contract.py:46
+    // data_sha256: Bytes = sha256(data_to_hash)
+    dup
+    sha256
+    // src/PuyaContracts/MIMC/contract.py:47
+    // data_box = Box(Bytes, key=concat(b"data", data_sha256))
+    byte 0x64617461
+    dig 1
+    concat
+    // src/PuyaContracts/MIMC/contract.py:48
+    // data_box.value = data_to_hash
+    dup
+    box_del
+    pop
+    dig 2
+    box_put
+    // src/PuyaContracts/MIMC/contract.py:49-50
+    // # Set the r value
+    // r_box = Box(BigUInt, key=concat(b"r", data_sha256))
+    byte 0x72
+    dig 1
+    concat
+    // src/PuyaContracts/MIMC/contract.py:51
+    // r_box.value = BigUInt(0)
+    dup
+    box_del
+    pop
+    byte 0x
+    box_put
+    // src/PuyaContracts/MIMC/contract.py:52-53
+    // # Set the counters
+    // num_chunks_box = Box(UInt64, key=concat(b"num_chunks", data_sha256))
+    byte 0x6e756d5f6368756e6b73
+    dig 1
+    concat
+    // src/PuyaContracts/MIMC/contract.py:54
+    // num_chunks_box.value = (data_to_hash.length // 32) + 1
+    uncover 2
+    len
+    int 32
+    /
+    int 1
+    +
+    itob
+    box_put
+    // src/PuyaContracts/MIMC/contract.py:56
+    // num_completed_box = Box(UInt64, key=concat(b"num_completed", data_sha256))
+    byte 0x6e756d5f636f6d706c65746564
+    uncover 1
+    concat
+    // src/PuyaContracts/MIMC/contract.py:57
+    // num_completed_box.value = UInt64(0)
+    int 0
+    itob
+    box_put
+    retsub
+
+
+// PuyaContracts.common.aggregate_gtxn_notes() -> bytes:
+aggregate_gtxn_notes:
+    // src/PuyaContracts/common.py:110-111
+    // @subroutine
+    // def aggregate_gtxn_notes() -> Bytes:
+    proto 0 1
+    // src/PuyaContracts/common.py:112
+    // data: Bytes = Bytes(b"")
+    byte 0x
+    // src/PuyaContracts/common.py:113
+    // group_size: UInt64 = Global.group_size
+    global GroupSize
+    // src/PuyaContracts/common.py:114
+    // for i in urange(group_size):
+    int 1
+    assert // Step cannot be zero
+    int 0
+
+aggregate_gtxn_notes_for_header@1:
+    // src/PuyaContracts/common.py:114
+    // for i in urange(group_size):
+    frame_dig 2
+    frame_dig 1
+    <
+    bz aggregate_gtxn_notes_after_for@5
+    frame_dig 2
+    // src/PuyaContracts/common.py:115
+    // note: Bytes = gtxn.Transaction(i).note
+    gtxns Note
+    // src/PuyaContracts/common.py:116
+    // data += note
+    frame_dig 0
+    uncover 1
+    concat
+    frame_bury 0
+    // src/PuyaContracts/common.py:114
+    // for i in urange(group_size):
+    frame_dig 2
+    int 1
+    +
+    frame_bury 2
+    b aggregate_gtxn_notes_for_header@1
+
+aggregate_gtxn_notes_after_for@5:
+    // src/PuyaContracts/common.py:117
+    // return data
+    frame_dig 0
+    frame_bury 0
+    retsub
+
+
+// PuyaContracts.MIMC.contract.MIMC.multimimc7(data_sha256: bytes) -> void:
+multimimc7:
+    // src/PuyaContracts/MIMC/contract.py:88-89
+    // @arc4.abimethod()
+    // def multimimc7(self, data_sha256: Bytes) -> None:
+    proto 1 0
+    // src/PuyaContracts/MIMC/contract.py:91
+    // r_box = Box(BigUInt, key=concat(b"r", data_sha256))
+    byte 0x72
+    frame_dig -1
+    concat
+    // src/PuyaContracts/MIMC/contract.py:93-94
+    // # As many hash rounds as permitted by the compute budget
+    // available_budget: UInt64 = (Global.group_size - 1) * 20_000
+    global GroupSize
+    int 1
+    -
+    int 20000
+    *
+    // src/PuyaContracts/MIMC/contract.py:95
+    // n_loops: UInt64 = available_budget // 27_000
+    int 27000
+    /
+    dup
+    cover 1
+    // src/PuyaContracts/MIMC/contract.py:98
+    // num_chunks_box = Box(UInt64, key=concat(b"num_chunks", data_sha256))
+    byte 0x6e756d5f6368756e6b73
+    frame_dig -1
+    concat
+    dup
+    cover 2
+    // src/PuyaContracts/MIMC/contract.py:99
+    // num_completed_box = Box(UInt64, key=concat(b"num_completed", data_sha256))
+    byte 0x6e756d5f636f6d706c65746564
+    frame_dig -1
+    concat
+    dup
+    cover 2
+    cover 3
+    // src/PuyaContracts/MIMC/contract.py:102
+    // num_chunks_box.value >= num_completed_box.value
+    dup
+    box_get
+    cover 1
+    btoi
+    cover 2
+    assert // check Box exists
+    dig 2
+    box_get
+    cover 1
+    btoi
+    uncover 1
+    assert // check Box exists
+    uncover 2
+    uncover 1
+    >=
+    // src/PuyaContracts/MIMC/contract.py:101-103
+    // assert (
+    //     num_chunks_box.value >= num_completed_box.value
+    // ), "Hash computation must be incomplete"
+    assert // Hash computation must be incomplete
+    // src/PuyaContracts/MIMC/contract.py:104
+    // data_box = Box(Bytes, key=concat(b"data", data_sha256))
+    byte 0x64617461
+    frame_dig -1
+    concat
+    dup
+    cover 4
+    // src/PuyaContracts/MIMC/contract.py:105
+    // assert data_box.value.length % 32 == UInt64(0), "Must be a multiple of 32"
+    dup
+    box_get
+    assert // check Box exists
+    len
+    int 32
+    %
+    int 0
+    ==
+    assert // Must be a multiple of 32
+    // src/PuyaContracts/MIMC/contract.py:106
+    // assert data_box.value.length != 0, "Must contain some data"
+    box_get
+    assert // check Box exists
+    len
+    int 0
+    !=
+    assert // Must contain some data
+    // src/PuyaContracts/MIMC/contract.py:108
+    // start_idx: UInt64 = num_completed_box.value
+    uncover 1
+    box_get
+    cover 1
+    btoi
+    uncover 1
+    assert // check Box exists
+    // src/PuyaContracts/MIMC/contract.py:109
+    // end_idx: UInt64 = min_value(start_idx + n_loops, num_chunks_box.value)
+    dup
+    uncover 3
+    +
+    uncover 2
+    box_get
+    cover 1
+    btoi
+    uncover 1
+    assert // check Box exists
+    callsub min_value
+    cover 1
+    // src/PuyaContracts/MIMC/contract.py:110
+    // for i in urange(start_idx, end_idx):
+    int 1
+    assert // Step cannot be zero
+
+multimimc7_for_header@1:
+    // src/PuyaContracts/MIMC/contract.py:110
+    // for i in urange(start_idx, end_idx):
+    frame_dig 6
+    frame_dig 5
+    <
+    bz multimimc7_after_for@5
+    frame_dig 6
+    // src/PuyaContracts/MIMC/contract.py:111
+    // arr_i: BigUInt = BigUInt.from_bytes(extract(data_box.value, 32 * i, 32))
+    frame_dig 4
+    box_get
+    assert // check Box exists
+    int 32
+    uncover 2
+    *
+    int 32
+    extract3
+    // src/PuyaContracts/MIMC/contract.py:90
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/MIMC/contract.py:112
+    // input = arr_i % P
+    b%
+    // src/PuyaContracts/MIMC/contract.py:113
+    // h: BigUInt = self.mimc7(input, r_box.value)
+    frame_dig 0
+    dup
+    cover 2
+    box_get
+    assert // check Box exists
+    dig 1
+    uncover 1
+    callsub mimc7
+    cover 2
+    // src/PuyaContracts/MIMC/contract.py:114
+    // r_box.value = (r_box.value + input + h) % P
+    dig 1
+    box_get
+    assert // check Box exists
+    uncover 1
+    b+
+    uncover 2
+    b+
+    // src/PuyaContracts/MIMC/contract.py:90
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/MIMC/contract.py:114
+    // r_box.value = (r_box.value + input + h) % P
+    b%
+    dig 1
+    box_del
+    pop
+    box_put
+    // src/PuyaContracts/MIMC/contract.py:110
+    // for i in urange(start_idx, end_idx):
+    frame_dig 6
+    int 1
+    +
+    frame_bury 6
+    b multimimc7_for_header@1
+
+multimimc7_after_for@5:
+    // src/PuyaContracts/MIMC/contract.py:116
+    // num_completed_box.value += n_loops
+    frame_dig 3
+    dup
+    box_get
+    cover 1
+    btoi
+    uncover 1
+    assert // check Box exists
+    frame_dig 1
+    +
+    itob
+    dig 1
+    uncover 1
+    box_put
+    // src/PuyaContracts/MIMC/contract.py:118-119
+    // # Write result to global storage when computed
+    // if num_completed_box.value >= num_chunks_box.value:
+    box_get
+    cover 1
+    btoi
+    cover 1
+    assert // check Box exists
+    frame_dig 2
+    box_get
+    cover 1
+    btoi
+    uncover 1
+    assert // check Box exists
+    >=
+    bz multimimc7_after_if_else@7
+    // src/PuyaContracts/MIMC/contract.py:120
+    // result_box = Box(Bytes, key=concat(b"result", data_sha256))
+    byte 0x726573756c74
+    frame_dig -1
+    concat
+    // src/PuyaContracts/MIMC/contract.py:121
+    // result_box.value = r_box.value.bytes
+    frame_dig 0
+    box_get
+    assert // check Box exists
+    dig 1
+    box_del
+    pop
+    box_put
+
+multimimc7_after_if_else@7:
+    retsub
+
+
+// PuyaContracts.common.min_value(a: uint64, b: uint64) -> uint64:
+min_value:
+    // src/PuyaContracts/common.py:120-121
+    // @subroutine
+    // def min_value(a: UInt64, b: UInt64) -> UInt64:
+    proto 2 1
+    // src/PuyaContracts/common.py:122
+    // if a <= b:
+    frame_dig -2
+    frame_dig -1
+    <=
+    bz min_value_after_if_else@2
+    // src/PuyaContracts/common.py:123
+    // return a
+    frame_dig -2
+    retsub
+
+min_value_after_if_else@2:
+    // src/PuyaContracts/common.py:124
+    // return b
+    frame_dig -1
+    retsub
+
+
+// PuyaContracts.MIMC.contract.MIMC.mimc7(x: bytes, k: bytes) -> bytes:
+mimc7:
+    // src/PuyaContracts/MIMC/contract.py:59-60
+    // @subroutine
+    // def mimc7(self, x: BigUInt, k: BigUInt) -> BigUInt:
+    proto 2 1
+    int 0
+    byte ""
+    // src/PuyaContracts/MIMC/contract.py:65
+    // t: BigUInt = x + k
+    frame_dig -2
+    frame_dig -1
+    b+
+    // src/PuyaContracts/MIMC/contract.py:66
+    // for i in urange(91):
+    int 1
+    assert // Step cannot be zero
+    int 0
+
+mimc7_for_header@1:
+    // src/PuyaContracts/MIMC/contract.py:66
+    // for i in urange(91):
+    frame_dig 3
+    int 91
+    <
+    bz mimc7_after_for@7
+    frame_dig 3
+    dup
+    frame_bury 1
+    // src/PuyaContracts/MIMC/contract.py:67
+    // if i > 0:
+    int 0
+    >
+    frame_dig 2
+    frame_bury 0
+    bz mimc7_after_if_else@4
+    // src/PuyaContracts/MIMC/contract.py:68
+    // const: Bytes = extract(C, 32 * i, 32)
+    int 32
+    frame_dig 1
+    *
+    // src/PuyaContracts/MIMC/contract.py:61
+    // C: Bytes = Bytes.from_base64(mimc_constants)
+    byte base64 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
+    // src/PuyaContracts/MIMC/contract.py:68
+    // const: Bytes = extract(C, 32 * i, 32)
+    uncover 1
+    int 32
+    extract3
+    // src/PuyaContracts/MIMC/contract.py:70
+    // t = t + const_bigUint + k
+    frame_dig 2
+    uncover 1
+    b+
+    frame_dig -1
+    b+
+    frame_bury 0
+
+mimc7_after_if_else@4:
+    frame_dig 0
+    // src/PuyaContracts/MIMC/contract.py:71
+    // tMul = t * t
+    dup
+    dig 1
+    b*
+    // src/PuyaContracts/MIMC/contract.py:62-63
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/MIMC/contract.py:72
+    // tMul = tMul % P
+    b%
+    // src/PuyaContracts/MIMC/contract.py:73
+    // tMul = tMul * t
+    dig 1
+    b*
+    // src/PuyaContracts/MIMC/contract.py:62-63
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/MIMC/contract.py:74
+    // tMul = tMul % P
+    b%
+    // src/PuyaContracts/MIMC/contract.py:75
+    // tMul = tMul * t
+    dig 1
+    b*
+    // src/PuyaContracts/MIMC/contract.py:62-63
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/MIMC/contract.py:76
+    // tMul = tMul % P
+    b%
+    // src/PuyaContracts/MIMC/contract.py:77
+    // tMul = tMul * t
+    dig 1
+    b*
+    // src/PuyaContracts/MIMC/contract.py:62-63
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/MIMC/contract.py:78
+    // tMul = tMul % P
+    b%
+    // src/PuyaContracts/MIMC/contract.py:79
+    // tMul = tMul * t
+    dig 1
+    b*
+    // src/PuyaContracts/MIMC/contract.py:62-63
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/MIMC/contract.py:80
+    // tMul = tMul % P
+    b%
+    // src/PuyaContracts/MIMC/contract.py:81
+    // tMul = tMul * t
+    uncover 1
+    b*
+    // src/PuyaContracts/MIMC/contract.py:62-63
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/MIMC/contract.py:82
+    // t = tMul % P
+    b%
+    frame_bury 2
+    // src/PuyaContracts/MIMC/contract.py:66
+    // for i in urange(91):
+    frame_dig 3
+    int 1
+    +
+    frame_bury 3
+    b mimc7_for_header@1
+
+mimc7_after_for@7:
+    // src/PuyaContracts/MIMC/contract.py:84
+    // result: BigUInt = (t + k) % P
+    frame_dig 2
+    frame_dig -1
+    b+
+    // src/PuyaContracts/MIMC/contract.py:62-63
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/MIMC/contract.py:84
+    // result: BigUInt = (t + k) % P
+    b%
+    // src/PuyaContracts/MIMC/contract.py:86
+    // return result
+    frame_bury 0
+    retsub
+
+
+// PuyaContracts.MIMC.contract.MIMC.verify_hash(data_sha256: bytes, data_mimc: bytes) -> void:
+verify_hash:
+    // src/PuyaContracts/MIMC/contract.py:123-124
+    // @arc4.abimethod()
+    // def verify_hash(self, data_sha256: Bytes, data_mimc: Bytes) -> None:
+    proto 2 0
+    // src/PuyaContracts/MIMC/contract.py:125-126
+    // # Assert the computation is complete
+    // num_chunks_box = Box(UInt64, key=concat(b"num_chunks", data_sha256))
+    byte 0x6e756d5f6368756e6b73
+    frame_dig -2
+    concat
+    // src/PuyaContracts/MIMC/contract.py:127
+    // num_completed_box = Box(UInt64, key=concat(b"num_completed", data_sha256))
+    byte 0x6e756d5f636f6d706c65746564
+    frame_dig -2
+    concat
+    // src/PuyaContracts/MIMC/contract.py:129
+    // num_completed_box.value >= num_chunks_box.value
+    box_get
+    cover 1
+    btoi
+    cover 1
+    assert // check Box exists
+    uncover 1
+    box_get
+    cover 1
+    btoi
+    uncover 1
+    assert // check Box exists
+    >=
+    // src/PuyaContracts/MIMC/contract.py:128-130
+    // assert (
+    //     num_completed_box.value >= num_chunks_box.value
+    // ), "Number of compute iterations must at least exceed number of 32 byte chunks"
+    assert // Number of compute iterations must at least exceed number of 32 byte chunks
+    // src/PuyaContracts/MIMC/contract.py:131-132
+    // # Asserts the hashes are sha256/mimc of the data
+    // result_box = Box(Bytes, key=concat(b"result", data_sha256))
+    byte 0x726573756c74
+    frame_dig -2
+    concat
+    // src/PuyaContracts/MIMC/contract.py:133
+    // assert result_box.value == data_mimc, "MIMC hash matches computed value"
+    box_get
+    assert // check Box exists
+    frame_dig -1
+    ==
+    assert // MIMC hash matches computed value
+    retsub

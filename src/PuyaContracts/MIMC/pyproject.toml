@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "MIMC"
+version = "0.1.0"
+description = "MIMC hasher"
+authors = ["Winton Nathan-Roberts"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.3"
+algorand-python = "^1.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
