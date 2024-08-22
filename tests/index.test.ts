@@ -1,8 +1,8 @@
-import { MIMCClient } from '../src'
 import { getTransactionSignerFromMnemonic } from '../src/util';
 import algosdk from 'algosdk';
 import 'dotenv/config'
 import { fundAccount, getAlgokitTestkit } from 'algokit-testkit'
+import { MIMCClient } from 'algo-mimc-hasher'
 
 const TEST_MNEMONIC: string = process.env.TEST_MNEMONIC!
 
@@ -24,7 +24,7 @@ test("MIMC Constant as hex string", async () => {
   await mimcClient.initialize(data)
   await mimcClient.multimimc7(data, true)
   await mimcClient.verifyMimcHash(data, true)
-})
+}, 120_000)
 
 test("MIMC of large RSA signing modulus (n)", async () => {
   console.warn("MIMC of large RSA signing modulus (n)")
@@ -44,5 +44,5 @@ test("MIMC of large RSA signing modulus (n)", async () => {
   await mimcClient.initialize(data)
   await mimcClient.multimimc7(data, true)
   await mimcClient.verifyMimcHash(data, true)
-})
+}, 120_000)
 

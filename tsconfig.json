@@ -4,6 +4,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "types": ["jest", "node"],
+    "allowJs": true,
     "rootDir": "src",
     "composite": true,
     "esModuleInterop": true,
@@ -46,6 +47,8 @@
     "node_modules",
     "dist",
     "**/*.test.ts",
-    "tests"
+    "tests",
+    "**/*.config.js",
+    "**/*.config.mjs"
   ] // *** The files to not type check ***
 }

@@ -11,8 +11,7 @@ export default [
     output: [
       {
         file: 'dist/bundle.mjs',
-        format: 'es',
-        inlineDynamicImports: true
+        format: 'es'
       }
     ],
     plugins: [
@@ -32,9 +31,6 @@ export default [
             declarationDir: 'dist/types'
           }
         }
-      }),
-      terser({
-        maxWorkers: 4
       })
     ]
   },
@@ -49,9 +45,6 @@ export default [
     plugins: [
       json(),
       commonjs(),
-      nodeResolve({
-        preferBuiltins: true
-      }),
       typescript({
         tsconfig: './tsconfig.cjs.json',
         useTsconfigDeclarationDir: true,
@@ -62,9 +55,6 @@ export default [
           }
         }
       }),
-      terser({
-        maxWorkers: 4
-      })
     ]
   }
 ]

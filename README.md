@@ -6,6 +6,10 @@ Algorand App that provides MIMC7 hasher functionality, implemented in an efficie
 
 ⭐ PRs, issues and feedback are welcomed.
 
+## Testing
+
+Prior to testing, run `yarn link` to test the built package itself, with `'algo-mimc-hasher'` referencing the built package.
+
 ## Disclaimer
 
 The code is provided "as is," without any warranties, express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, or non-infringement. Use the code at your own risk.
