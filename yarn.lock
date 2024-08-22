@@ -852,16 +852,16 @@ algo-msgpack-with-bigint@^2.1.1:
   resolved "https://registry.npmjs.org/algo-msgpack-with-bigint/-/algo-msgpack-with-bigint-2.1.1.tgz"
   integrity sha512-F1tGh056XczEaEAqu7s+hlZUDWwOBT70Eq0lfMpBP2YguSQVyxRbprLq5rELXKQOyOaixTWYhMeMQMzP0U5FoQ==
 
-algokit-testkit@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/algokit-testkit/-/algokit-testkit-1.0.2.tgz"
-  integrity sha512-+22hk+MWO3lNC3K1eyq5/gKy4M6oTSWEXMeHaYTRG6aYFXNe3NVPoU5WSU1ayvBed/fwL3W5vatLlhGX/qrjPw==
+algokit-testkit@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/algokit-testkit/-/algokit-testkit-1.1.1.tgz#060072fc2c2ee8c17605be288c227a27b07f13ad"
+  integrity sha512-czcw5Of5z7626K2FSb6wj3KExDqI8/fuSuSXMwxnERB4JwcO/Au1wLGL3ODFrtcqyvVt1694SnfiMm6JP1XTCg==
   dependencies:
-    algosdk "^2.6.0"
+    algosdk "^2.9.0"
 
-algosdk@^2.6.0, algosdk@^2.9.0:
+algosdk@^2.9.0:
   version "2.9.0"
-  resolved "https://registry.npmjs.org/algosdk/-/algosdk-2.9.0.tgz"
+  resolved "https://registry.yarnpkg.com/algosdk/-/algosdk-2.9.0.tgz#a93cc26675e5310667ce5e9667305ce48a1818f9"
   integrity sha512-o0n0nLMbTX6SFQdMUk2/2sy50jmEmZk5OTPYSh2aAeP8DUPxrhjMPfwGsYNvaO+qk75MixC2eWpfA9vygCQ/Mg==
   dependencies:
     algo-msgpack-with-bigint "^2.1.1"

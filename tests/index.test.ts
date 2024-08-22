@@ -1,8 +1,8 @@
-import { fundAccount, getAlgokitTestkit } from 'algokit-testkit'
 import { MIMCClient } from '../src'
 import { getTransactionSignerFromMnemonic } from '../src/util';
 import algosdk from 'algosdk';
 import 'dotenv/config'
+import { fundAccount, getAlgokitTestkit } from 'algokit-testkit'
 
 const TEST_MNEMONIC: string = process.env.TEST_MNEMONIC!
 
