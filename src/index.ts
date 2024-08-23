@@ -1,5 +1,5 @@
 import algosdk, { bigIntToBytes, bytesToBigInt } from 'algosdk'
-import { chunks, leftPadAsMultiple, base64ToBase64url, sha256 } from './util'
+import { chunks, leftPadAsMultiple, base64ToBase64url, sha256, generateRandomString } from './util'
 import { MimcClient } from './PuyaContracts/build/MIMC.client'
 import { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account'
 import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount'
@@ -42,7 +42,7 @@ export class MIMCClient {
     )
 
     const createApp = this.mimcClient.create.create
-    const created = await createApp([])
+    const created = await createApp([], { lease: generateRandomString(32) })
 
     this.mimcAppId = Number(created.appId)
     await this.mimcClient.appClient.fundAppAccount({
