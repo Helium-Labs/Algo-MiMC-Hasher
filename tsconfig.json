@@ -1,18 +1,19 @@
 {
   "compilerOptions": {
+    "outDir": "dist",
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "types": ["jest", "node"],
-    "allowJs": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "composite": true,
+    "allowJs": true,
     "esModuleInterop": true,
     "strict": true,
     "incremental": true,
     "declarationMap": true,
     "declaration": true,
-    "declarationDir": "dist/types",
+    "declarationDir": "dist",
     "sourceMap": true,
     "skipLibCheck": true,
     "noErrorTruncation": true,
@@ -41,14 +42,13 @@
     "noStrictGenericChecks": false
   },
   "include": [
-    "**/*" // *** The files TypeScript should type check ***
+    "**/*.ts", // *** The files TypeScript should type check ***
+    "**/*.json" // Add this line to include all JSON files
   ],
   "exclude": [
     "node_modules",
     "dist",
     "**/*.test.ts",
-    "tests",
-    "**/*.config.js",
-    "**/*.config.mjs"
-  ] // *** The files to not type check ***
+    "tests"
+  ]
 }
