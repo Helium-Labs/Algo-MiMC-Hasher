@@ -43,7 +43,7 @@
   },
   "include": [
     "**/*.ts", // *** The files TypeScript should type check ***
-    "**/*.json" // Add this line to include all JSON files
+    "**/PuyaContracts/build/*.json" // Add this line to include all JSON files
   ],
   "exclude": [
     "node_modules",
