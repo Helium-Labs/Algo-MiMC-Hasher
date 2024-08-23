@@ -42,8 +42,8 @@
     "noStrictGenericChecks": false
   },
   "include": [
-    "**/*.ts", // *** The files TypeScript should type check ***
-    "**/PuyaContracts/build/*.json"
+    "**/*.ts",
+    "**/src/**/*.json"
   ],
   "exclude": [
     "node_modules",

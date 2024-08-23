@@ -11,12 +11,5 @@
     ],
     "module": "CommonJS",
     "moduleResolution": "Node"
-  },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "tests",
-    "lib"
-  ]
+  }
 }
