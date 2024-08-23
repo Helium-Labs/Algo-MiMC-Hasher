@@ -42,7 +42,7 @@ export class MIMCClient {
     )
 
     const createApp = this.mimcClient.create.create
-    const created = await createApp([], { lease: generateRandomString(32) })
+    const created = await createApp([])
 
     this.mimcAppId = Number(created.appId)
     await this.mimcClient.appClient.fundAppAccount({
