@@ -1,5 +1,5 @@
 import algosdk, { bigIntToBytes, bytesToBigInt } from 'algosdk'
-import { chunks, leftPadAsMultiple, base64ToBase64url, sha256, generateRandomString } from './util'
+import { chunks, leftPadAsMultiple, base64ToBase64url, sha256, getTransactionSignerFromMnemonic } from './util'
 import { MimcClient } from './PuyaContracts/build/MIMC.client'
 import { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account'
 import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount'
@@ -12,6 +12,8 @@ import * as crypto from 'crypto'
 import mimcHasherARC32 from './PuyaContracts/build/MIMC.arc32.json'
 import { setTealSourceMapForTxn } from './util'
 import { multiMiMC7 } from 'mimc-hasher'
+
+export { getTransactionSignerFromMnemonic }
 
 export class MIMCClient {
   private mimcClient: MimcClient
