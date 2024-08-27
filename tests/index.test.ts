@@ -63,21 +63,6 @@ test("MIMC of OIDC issuer", async () => {
   await mimcClient.verifyMimcHash(data)
 }, 120_000)
 
-test("MIMC of OIDC issuer", async () => {
-  const algod = await getAlgod()
-  const signer = getTransactionSignerFromMnemonic(TEST_MNEMONIC);
-
-  const mimcClient = new MIMCClient(algod, signer)
-
-  await mimcClient.createMimcApp()
-  const dataAsBuf = Buffer.from("https://accounts.google.com", 'utf8')
-  const data = Uint8Array.from(dataAsBuf)
-
-  await mimcClient.initialize(data)
-  await mimcClient.multimimc7(data)
-  await mimcClient.verifyMimcHash(data)
-}, 120_000)
-
 test("Expect failure: invalid MIMC hash should fail", async () => {
   const algod = await getAlgod()
   const signer = getTransactionSignerFromMnemonic(TEST_MNEMONIC);
