@@ -1,6 +1,6 @@
 {
   "name": "algo-mimc-hasher",
-  "version": "1.2.1",
+  "version": "1.4.0",
   "description": "Algorand App that implements a MIMC Hasher",
   "scripts": {
     "test": "jest",

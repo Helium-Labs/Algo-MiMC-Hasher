@@ -1,4 +1,4 @@
-from algopy import logicsig, subroutine, Bytes, urange, BigUInt, UInt64
+from algopy import logicsig, subroutine, Bytes, urange, BigUInt, UInt64, Txn, Global
 from algopy.op import extract, sha256, substring, btoi
 from ..common import (
     b254_r_prime_int,
@@ -9,22 +9,6 @@ from ..common import (
 
 # Constants
 mimc7_constants_sha256_hash: str = "w14x2USkTeC2FqzT08l1Mub5hic3iA9MUkJDZpp5hp0="
-
-
-"""
-Cost of mimc7 for one 32 byte input:
-Per loop:
-b%: 7 * 20 = 140
-b*: 6 * 20 = 120
-b+: 2 * 10 = 20
-extract: 1
-Total: 281
-
-Across all 91 loops:
-91 loops: 281*91
-Total: ~26,000
-"""
-
 
 @subroutine
 def mimc7(x: BigUInt, k: BigUInt, C: Bytes) -> BigUInt:
@@ -72,6 +56,10 @@ def multimimc7(arr: Bytes, C: Bytes, r: BigUInt) -> BigUInt:
 
 @logicsig
 def mimc_hasher() -> bool:
+    # Prevent rekey
+    assert Txn.rekey_to == Global.zero_address, "There is no ability to rekey"
+
+    # Unpack input
     gtxn_notes: Bytes = aggregate_gtxn_notes()
     mimc_payload: MIMCPayload = MIMCPayload.from_bytes(gtxn_notes)
 
@@ -85,6 +73,7 @@ def mimc_hasher() -> bool:
     )
     constants: Bytes = decode_dynamic_bytes(mimc_payload.constants.bytes)
 
+    # Validate MIMC constants
     assert sha256(constants) == Bytes.from_base64(
         mimc7_constants_sha256_hash
     ), "MIMC Hash constants must be untampered"
@@ -93,6 +82,7 @@ def mimc_hasher() -> bool:
         mimc_hash_preimage, start_idx * UInt64(32), end_idx * UInt64(32)
     )
 
+    # Compute hash
     assert (
         multimimc7(mimc_hash_preimage_segment, constants, previous_r_value) == mimc_hash
     ), "MIMC hash must match"

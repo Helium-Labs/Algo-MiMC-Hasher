@@ -16,7 +16,8 @@ from ..common import (
     MIMCPayload,
 )
 
-MIMC_HASHER_ADDR_B64: str = "E4aVj9SAVtOCdEPOkMd+Y+Ip0ClgLeeA7GmoEI/5puA="
+# Address of the MIMC Hasher LSIG
+MIMC_HASHER_ADDR_B64: str = "gRztmhbv6+WrxGhOQcUx2AVbU+hBR9h29AEUV8gUdkc="
 
 
 class MIMC(ARC4Contract):

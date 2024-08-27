@@ -1,7 +1,7 @@
 #pragma version 10
 
 PuyaContracts.MIMC.contract.MIMC.approval_program:
-    // src/PuyaContracts/MIMC/contract.py:22
+    // src/PuyaContracts/MIMC/contract.py:23
     // class MIMC(ARC4Contract):
     txna ApplicationArgs 0
     method "create()void"
@@ -13,7 +13,7 @@ PuyaContracts.MIMC.contract.MIMC.approval_program:
     b main_switch_case_default@5
 
 main_create_route@1:
-    // src/PuyaContracts/MIMC/contract.py:23
+    // src/PuyaContracts/MIMC/contract.py:24
     // @arc4.abimethod(create="require")
     txn OnCompletion
     int NoOp
@@ -27,7 +27,7 @@ main_create_route@1:
     return
 
 main_initialize_route@2:
-    // src/PuyaContracts/MIMC/contract.py:27
+    // src/PuyaContracts/MIMC/contract.py:28
     // @arc4.abimethod()
     txn OnCompletion
     int NoOp
@@ -40,7 +40,7 @@ main_initialize_route@2:
     return
 
 main_multimimc7_route@3:
-    // src/PuyaContracts/MIMC/contract.py:48
+    // src/PuyaContracts/MIMC/contract.py:49
     // @arc4.abimethod()
     txn OnCompletion
     int NoOp
@@ -53,7 +53,7 @@ main_multimimc7_route@3:
     return
 
 main_verify_hash_route@4:
-    // src/PuyaContracts/MIMC/contract.py:103
+    // src/PuyaContracts/MIMC/contract.py:104
     // @arc4.abimethod()
     txn OnCompletion
     int NoOp
@@ -61,27 +61,27 @@ main_verify_hash_route@4:
     assert // OnCompletion is NoOp
     txn ApplicationID
     assert // is not creating
-    // src/PuyaContracts/MIMC/contract.py:22
+    // src/PuyaContracts/MIMC/contract.py:23
     // class MIMC(ARC4Contract):
     txna ApplicationArgs 1
     extract 2 0
     txna ApplicationArgs 2
     extract 2 0
-    // src/PuyaContracts/MIMC/contract.py:103
+    // src/PuyaContracts/MIMC/contract.py:104
     // @arc4.abimethod()
     callsub verify_hash
     int 1
     return
 
 main_switch_case_default@5:
-    // src/PuyaContracts/MIMC/contract.py:22
+    // src/PuyaContracts/MIMC/contract.py:23
     // class MIMC(ARC4Contract):
     err // reject transaction
 
 
 // PuyaContracts.MIMC.contract.MIMC.create() -> void:
 create:
-    // src/PuyaContracts/MIMC/contract.py:23-24
+    // src/PuyaContracts/MIMC/contract.py:24-25
     // @arc4.abimethod(create="require")
     // def create(self) -> None:
     proto 0 0
@@ -90,15 +90,15 @@ create:
 
 // PuyaContracts.MIMC.contract.MIMC.initialize() -> void:
 initialize:
-    // src/PuyaContracts/MIMC/contract.py:27-28
+    // src/PuyaContracts/MIMC/contract.py:28-29
     // @arc4.abimethod()
     // def initialize(self) -> None:
     proto 0 0
-    // src/PuyaContracts/MIMC/contract.py:29-30
+    // src/PuyaContracts/MIMC/contract.py:30-31
     // # Read data to hash from notes
     // gtxn_notes: Bytes = aggregate_gtxn_notes()
     callsub aggregate_gtxn_notes
-    // src/PuyaContracts/MIMC/contract.py:33
+    // src/PuyaContracts/MIMC/contract.py:34
     // mimc_payload.mimc_hash_preimage.bytes
     dup
     int 82
@@ -110,35 +110,35 @@ initialize:
     uncover 2
     uncover 2
     substring3
-    // src/PuyaContracts/MIMC/contract.py:32-34
+    // src/PuyaContracts/MIMC/contract.py:33-35
     // mimc_hash_preimage: Bytes = decode_dynamic_bytes(
     //     mimc_payload.mimc_hash_preimage.bytes
     // )
     callsub decode_dynamic_bytes
-    // src/PuyaContracts/MIMC/contract.py:35
+    // src/PuyaContracts/MIMC/contract.py:36
     // sha256_id: Bytes = sha256(mimc_hash_preimage)
     dup
     sha256
-    // src/PuyaContracts/MIMC/contract.py:37-38
+    // src/PuyaContracts/MIMC/contract.py:38-39
     // # Set the r value
     // r_box = Box(BigUInt, key=concat(b"r", sha256_id))
     byte 0x72
     dig 1
     concat
-    // src/PuyaContracts/MIMC/contract.py:39
+    // src/PuyaContracts/MIMC/contract.py:40
     // r_box.value = BigUInt(0)
     dup
     box_del
     pop
     byte 0x
     box_put
-    // src/PuyaContracts/MIMC/contract.py:41-42
+    // src/PuyaContracts/MIMC/contract.py:42-43
     // # Set the counters
     // num_chunks_box = Box(UInt64, key=concat(b"num_chunks", sha256_id))
     byte 0x6e756d5f6368756e6b73
     dig 1
     concat
-    // src/PuyaContracts/MIMC/contract.py:43
+    // src/PuyaContracts/MIMC/contract.py:44
     // num_chunks_box.value = mimc_hash_preimage.length // 32
     uncover 2
     len
@@ -146,12 +146,12 @@ initialize:
     /
     itob
     box_put
-    // src/PuyaContracts/MIMC/contract.py:45
+    // src/PuyaContracts/MIMC/contract.py:46
     // num_completed_box = Box(UInt64, key=concat(b"num_completed", sha256_id))
     byte 0x6e756d5f636f6d706c65746564
     uncover 1
     concat
-    // src/PuyaContracts/MIMC/contract.py:46
+    // src/PuyaContracts/MIMC/contract.py:47
     // num_completed_box.value = UInt64(0)
     int 0
     itob
@@ -229,14 +229,14 @@ decode_dynamic_bytes:
 
 // PuyaContracts.MIMC.contract.MIMC.multimimc7() -> void:
 multimimc7:
-    // src/PuyaContracts/MIMC/contract.py:48-49
+    // src/PuyaContracts/MIMC/contract.py:49-50
     // @arc4.abimethod()
     // def multimimc7(self) -> None:
     proto 0 0
-    // src/PuyaContracts/MIMC/contract.py:50
+    // src/PuyaContracts/MIMC/contract.py:51
     // gtxn_notes: Bytes = aggregate_gtxn_notes()
     callsub aggregate_gtxn_notes
-    // src/PuyaContracts/MIMC/contract.py:52
+    // src/PuyaContracts/MIMC/contract.py:53
     // start_idx: UInt64 = btoi(mimc_payload.compute_start_idx.bytes)
     dup
     int 64
@@ -244,7 +244,7 @@ multimimc7:
     extract3 // on error: Index access is out of bounds
     btoi
     cover 1
-    // src/PuyaContracts/MIMC/contract.py:53
+    // src/PuyaContracts/MIMC/contract.py:54
     // end_idx: UInt64 = btoi(mimc_payload.compute_end_idx.bytes)
     dup
     int 72
@@ -252,29 +252,29 @@ multimimc7:
     extract3 // on error: Index access is out of bounds
     btoi
     cover 1
-    // src/PuyaContracts/MIMC/contract.py:55
+    // src/PuyaContracts/MIMC/contract.py:56
     // mimc_hash: Bytes = mimc_payload.mimc_hash.bytes
     dup
     int 0
     int 32
     extract3 // on error: Index access is out of bounds
     cover 3
-    // src/PuyaContracts/MIMC/contract.py:56-58
+    // src/PuyaContracts/MIMC/contract.py:57-59
     // previous_r_value: BigUInt = BigUInt.from_bytes(
     //     mimc_payload.previous_r_value.bytes
     // )
     dup
-    // src/PuyaContracts/MIMC/contract.py:57
+    // src/PuyaContracts/MIMC/contract.py:58
     // mimc_payload.previous_r_value.bytes
     int 32
     int 32
     extract3 // on error: Index access is out of bounds
-    // src/PuyaContracts/MIMC/contract.py:56-58
+    // src/PuyaContracts/MIMC/contract.py:57-59
     // previous_r_value: BigUInt = BigUInt.from_bytes(
     //     mimc_payload.previous_r_value.bytes
     // )
     cover 1
-    // src/PuyaContracts/MIMC/contract.py:60
+    // src/PuyaContracts/MIMC/contract.py:61
     // mimc_payload.mimc_hash_preimage.bytes
     dup
     int 82
@@ -286,23 +286,23 @@ multimimc7:
     uncover 2
     uncover 2
     substring3
-    // src/PuyaContracts/MIMC/contract.py:59-61
+    // src/PuyaContracts/MIMC/contract.py:60-62
     // mimc_hash_preimage: Bytes = decode_dynamic_bytes(
     //     mimc_payload.mimc_hash_preimage.bytes
     // )
     callsub decode_dynamic_bytes
-    // src/PuyaContracts/MIMC/contract.py:62
+    // src/PuyaContracts/MIMC/contract.py:63
     // sha256_id: Bytes = sha256(mimc_hash_preimage)
     sha256
     dup
     cover 5
-    // src/PuyaContracts/MIMC/contract.py:64
+    // src/PuyaContracts/MIMC/contract.py:65
     // num_chunks_box = Box(UInt64, key=concat(b"num_chunks", sha256_id))
     byte 0x6e756d5f6368756e6b73
     dig 1
     concat
     cover 2
-    // src/PuyaContracts/MIMC/contract.py:66-67
+    // src/PuyaContracts/MIMC/contract.py:67-68
     // # r value integrity
     // r_box = Box(BigUInt, key=concat(b"r", sha256_id))
     byte 0x72
@@ -310,7 +310,7 @@ multimimc7:
     concat
     dup
     cover 7
-    // src/PuyaContracts/MIMC/contract.py:70
+    // src/PuyaContracts/MIMC/contract.py:71
     // previous_r_value == r_box.value
     dup
     box_get
@@ -318,18 +318,18 @@ multimimc7:
     uncover 3
     uncover 1
     b==
-    // src/PuyaContracts/MIMC/contract.py:69-71
+    // src/PuyaContracts/MIMC/contract.py:70-72
     // assert (
     //     previous_r_value == r_box.value
     // ), "Previous r value must match that previously computed last round"
     assert // Previous r value must match that previously computed last round
-    // src/PuyaContracts/MIMC/contract.py:73-74
+    // src/PuyaContracts/MIMC/contract.py:74-75
     // # start index integrity
     // num_completed_box = Box(UInt64, key=concat(b"num_completed", sha256_id))
     byte 0x6e756d5f636f6d706c65746564
     uncover 2
     concat
-    // src/PuyaContracts/MIMC/contract.py:75
+    // src/PuyaContracts/MIMC/contract.py:76
     // assert num_completed_box.value == start_idx, "Start index must be contiguous"
     dup
     box_get
@@ -340,14 +340,14 @@ multimimc7:
     dig 5
     ==
     assert // Start index must be contiguous
-    // src/PuyaContracts/MIMC/contract.py:77-78
+    // src/PuyaContracts/MIMC/contract.py:78-79
     // # end indx integrity
     // assert start_idx < end_idx, "Start idx must be less than end idx"
     uncover 4
     dig 4
     <
     assert // Start idx must be less than end idx
-    // src/PuyaContracts/MIMC/contract.py:79
+    // src/PuyaContracts/MIMC/contract.py:80
     // assert end_idx <= num_chunks_box.value
     dig 2
     box_get
@@ -359,7 +359,7 @@ multimimc7:
     uncover 1
     <=
     assert
-    // src/PuyaContracts/MIMC/contract.py:81-82
+    // src/PuyaContracts/MIMC/contract.py:82-83
     // # Update r value
     // r_box.value = BigUInt.from_bytes(mimc_hash)
     uncover 4
@@ -369,7 +369,7 @@ multimimc7:
     uncover 2
     uncover 1
     box_put
-    // src/PuyaContracts/MIMC/contract.py:84-85
+    // src/PuyaContracts/MIMC/contract.py:85-86
     // # Update number of hashed chunks
     // num_completed_box.value = end_idx
     uncover 2
@@ -377,14 +377,14 @@ multimimc7:
     dig 1
     uncover 1
     box_put
-    // src/PuyaContracts/MIMC/contract.py:87-88
+    // src/PuyaContracts/MIMC/contract.py:88-89
     // # MIMC Hasher integrity
     // assert Global.group_size >= 2, "Must be at least 2 transactions in the group"
     global GroupSize
     int 2
     >=
     assert // Must be at least 2 transactions in the group
-    // src/PuyaContracts/MIMC/contract.py:93
+    // src/PuyaContracts/MIMC/contract.py:94
     // MIMC_HASHER_LSIG_TXN = gtxn.PaymentTransaction(1)
     int 1
     gtxns TypeEnum
@@ -392,21 +392,21 @@ multimimc7:
     ==
     assert // transaction type is pay
     int 1
-    // src/PuyaContracts/MIMC/contract.py:95
+    // src/PuyaContracts/MIMC/contract.py:96
     // MIMC_HASHER_LSIG_TXN.sender == MIMC_HASHER_LSIG_ACCOUNT
     gtxns Sender
-    // src/PuyaContracts/MIMC/contract.py:89
+    // src/PuyaContracts/MIMC/contract.py:90
     // MIMC_HASHER_LSIG_ACCOUNT_ADDR: Bytes = Bytes.from_base64(MIMC_HASHER_ADDR_B64)
-    byte base64 E4aVj9SAVtOCdEPOkMd+Y+Ip0ClgLeeA7GmoEI/5puA=
-    // src/PuyaContracts/MIMC/contract.py:95
+    byte base64 gRztmhbv6+WrxGhOQcUx2AVbU+hBR9h29AEUV8gUdkc=
+    // src/PuyaContracts/MIMC/contract.py:96
     // MIMC_HASHER_LSIG_TXN.sender == MIMC_HASHER_LSIG_ACCOUNT
     ==
-    // src/PuyaContracts/MIMC/contract.py:94-96
+    // src/PuyaContracts/MIMC/contract.py:95-97
     // assert (
     //     MIMC_HASHER_LSIG_TXN.sender == MIMC_HASHER_LSIG_ACCOUNT
     // ), "MIMC Hasher must have expected approval program (sender is hash of LSIG)"
     assert // MIMC Hasher must have expected approval program (sender is hash of LSIG)
-    // src/PuyaContracts/MIMC/contract.py:98-99
+    // src/PuyaContracts/MIMC/contract.py:99-100
     // # Record hash result once all chunks hashed
     // if num_completed_box.value >= num_chunks_box.value:
     box_get
@@ -422,12 +422,12 @@ multimimc7:
     assert // check Box exists
     >=
     bz multimimc7_after_if_else@2
-    // src/PuyaContracts/MIMC/contract.py:100
+    // src/PuyaContracts/MIMC/contract.py:101
     // result_box = Box(Bytes, key=concat(b"result", sha256_id))
     byte 0x726573756c74
     frame_dig 0
     concat
-    // src/PuyaContracts/MIMC/contract.py:101
+    // src/PuyaContracts/MIMC/contract.py:102
     // result_box.value = r_box.value.bytes
     frame_dig 1
     box_get
@@ -443,22 +443,22 @@ multimimc7_after_if_else@2:
 
 // PuyaContracts.MIMC.contract.MIMC.verify_hash(data_sha256: bytes, data_mimc: bytes) -> void:
 verify_hash:
-    // src/PuyaContracts/MIMC/contract.py:103-104
+    // src/PuyaContracts/MIMC/contract.py:104-105
     // @arc4.abimethod()
     // def verify_hash(self, data_sha256: Bytes, data_mimc: Bytes) -> None:
     proto 2 0
-    // src/PuyaContracts/MIMC/contract.py:105-106
+    // src/PuyaContracts/MIMC/contract.py:106-107
     // # Assert the computation is complete
     // num_chunks_box = Box(UInt64, key=concat(b"num_chunks", data_sha256))
     byte 0x6e756d5f6368756e6b73
     frame_dig -2
     concat
-    // src/PuyaContracts/MIMC/contract.py:107
+    // src/PuyaContracts/MIMC/contract.py:108
     // num_completed_box = Box(UInt64, key=concat(b"num_completed", data_sha256))
     byte 0x6e756d5f636f6d706c65746564
     frame_dig -2
     concat
-    // src/PuyaContracts/MIMC/contract.py:109
+    // src/PuyaContracts/MIMC/contract.py:110
     // num_completed_box.value >= num_chunks_box.value
     box_get
     cover 1
@@ -472,18 +472,18 @@ verify_hash:
     uncover 1
     assert // check Box exists
     >=
-    // src/PuyaContracts/MIMC/contract.py:108-110
+    // src/PuyaContracts/MIMC/contract.py:109-111
     // assert (
     //     num_completed_box.value >= num_chunks_box.value
     // ), "Number of compute iterations must at least exceed number of 32 byte chunks"
     assert // Number of compute iterations must at least exceed number of 32 byte chunks
-    // src/PuyaContracts/MIMC/contract.py:111-112
+    // src/PuyaContracts/MIMC/contract.py:112-113
     // # Asserts the hashes are sha256/mimc of the data
     // result_box = Box(Bytes, key=concat(b"result", data_sha256))
     byte 0x726573756c74
     frame_dig -2
     concat
-    // src/PuyaContracts/MIMC/contract.py:113
+    // src/PuyaContracts/MIMC/contract.py:114
     // assert result_box.value == data_mimc, "MIMC hash matches computed value"
     box_get
     assert // check Box exists
