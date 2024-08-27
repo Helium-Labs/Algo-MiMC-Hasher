@@ -1,7 +1,7 @@
 import { getTransactionSignerFromMnemonic } from '../src/util';
 import algosdk from 'algosdk';
 import 'dotenv/config'
-import { MIMCClient } from 'algo-mimc-hasher'
+import { MIMCClient } from '../src'
 
 const TEST_MNEMONIC: string = process.env.TEST_MNEMONIC!
 
@@ -15,7 +15,7 @@ const getAlgod = async () => {
   return new algosdk.Algodv2(algodToken, algodServer, algodPort)
 }
 
-test("MIMC Constant as hex string", async () => {
+test("MIMC of small value", async () => {
   const algod = await getAlgod()
   const signer = getTransactionSignerFromMnemonic(TEST_MNEMONIC);
 
@@ -26,8 +26,8 @@ test("MIMC Constant as hex string", async () => {
   const data = Uint8Array.from(dataAsBuf)
 
   await mimcClient.initialize(data)
-  await mimcClient.multimimc7(data, true)
-  await mimcClient.verifyMimcHash(data, true)
+  await mimcClient.multimimc7(data)
+  await mimcClient.verifyMimcHash(data)
 }, 120_000)
 
 test("MIMC of large RSA signing modulus (n)", async () => {
@@ -43,7 +43,22 @@ test("MIMC of large RSA signing modulus (n)", async () => {
   const data = Uint8Array.from(dataAsBuf)
 
   await mimcClient.initialize(data)
-  await mimcClient.multimimc7(data, true)
-  await mimcClient.verifyMimcHash(data, true)
+  await mimcClient.multimimc7(data)
+  await mimcClient.verifyMimcHash(data)
+}, 120_000)
+
+test("MIMC of OIDC issuer", async () => {
+  const algod = await getAlgod()
+  const signer = getTransactionSignerFromMnemonic(TEST_MNEMONIC);
+
+  const mimcClient = new MIMCClient(algod, signer)
+
+  await mimcClient.createMimcApp()
+  const dataAsBuf = Buffer.from("https://accounts.google.com", 'utf8')
+  const data = Uint8Array.from(dataAsBuf)
+
+  await mimcClient.initialize(data)
+  await mimcClient.multimimc7(data)
+  await mimcClient.verifyMimcHash(data)
 }, 120_000)
 

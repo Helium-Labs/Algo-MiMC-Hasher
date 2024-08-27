@@ -10,3 +10,12 @@ export interface TealSource {
     programHash: string;
     source: string;
 }
+
+export interface MIMCPayload {
+    mimcHash: Uint8Array;
+    previousRValue: Uint8Array;
+    computeStartIdx: number;
+    computeEndIdx: number;
+    constants: Uint8Array;
+    mimcHashPreimage: Uint8Array;
+}

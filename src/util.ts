@@ -90,3 +90,12 @@ export function getTransactionSignerFromMnemonic(
     }
   }
 }
+
+export async function getRandomBytes(len: number): Promise<Uint8Array> {
+  return new Promise((res, rej) => {
+    crypto.randomBytes(len, (err, buf: Buffer) => {
+      if (err) rej(err)
+      res(Uint8Array.from(buf))
+    });
+  })
+}

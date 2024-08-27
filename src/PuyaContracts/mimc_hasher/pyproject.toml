@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "groth16-proof-verifier"
+version = "0.1.0"
+description = "Groth16 Proof Verifier - Algorand Puya Implementation"
+authors = ["Winton Nathan-Roberts"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.3"
+algorand-python = "^1.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
