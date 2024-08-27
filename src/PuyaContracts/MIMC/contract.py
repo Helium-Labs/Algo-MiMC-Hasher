@@ -5,6 +5,9 @@ from algopy import (
     UInt64,
     BigUInt,
     Box,
+    Account,
+    gtxn,
+    Global,
 )
 from algopy.op import sha256, concat, btoi
 from ..common import (
@@ -13,8 +16,8 @@ from ..common import (
     MIMCPayload,
 )
 
-# Constants
-mimc7_constants_sha256_hash: str = "w14x2USkTeC2FqzT08l1Mub5hic3iA9MUkJDZpp5hp0="
+MIMC_HASHER_ADDR_B64: str = "E4aVj9SAVtOCdEPOkMd+Y+Ip0ClgLeeA7GmoEI/5puA="
+
 
 class MIMC(ARC4Contract):
     @arc4.abimethod(create="require")
@@ -80,6 +83,17 @@ class MIMC(ARC4Contract):
 
         # Update number of hashed chunks
         num_completed_box.value = end_idx
+
+        # MIMC Hasher integrity
+        assert Global.group_size >= 2, "Must be at least 2 transactions in the group"
+        MIMC_HASHER_LSIG_ACCOUNT_ADDR: Bytes = Bytes.from_base64(MIMC_HASHER_ADDR_B64)
+        MIMC_HASHER_LSIG_ACCOUNT: Account = Account.from_bytes(
+            MIMC_HASHER_LSIG_ACCOUNT_ADDR
+        )
+        MIMC_HASHER_LSIG_TXN = gtxn.PaymentTransaction(1)
+        assert (
+            MIMC_HASHER_LSIG_TXN.sender == MIMC_HASHER_LSIG_ACCOUNT
+        ), "MIMC Hasher must have expected approval program (sender is hash of LSIG)"
 
         # Record hash result once all chunks hashed
         if num_completed_box.value >= num_chunks_box.value:

@@ -191,9 +191,9 @@ export class MIMCClient {
     return txIds
   }
 
-  public async multimimc7(data: Uint8Array, simulate: true): Promise<SimulateResponse>;
-  public async multimimc7(data: Uint8Array, simulate?: false): Promise<string[]>;
-  public async multimimc7(data: Uint8Array, simulate: boolean = false): Promise<SimulateResponse | string[]> {
+  public async multimimc7(data: Uint8Array, simulate: true, overrideDataMimc?: Uint8Array): Promise<SimulateResponse>;
+  public async multimimc7(data: Uint8Array, simulate?: false, overrideDataMimc?: Uint8Array): Promise<string[]>;
+  public async multimimc7(data: Uint8Array, simulate: boolean = false, overrideDataMimc?: Uint8Array): Promise<SimulateResponse | string[]> {
     const dataCopy = data.slice()
     let previousRValue: Uint8Array = Buffer.alloc(32)
     const mimcPayload: MIMCPayload = {
@@ -227,6 +227,7 @@ export class MIMCClient {
       mimcPayload.computeEndIdx = completedChunks + numChunksToHash
       const mimcInputs = chunks(mimcPayload.mimcHashPreimage, 32).slice(mimcPayload.computeStartIdx, mimcPayload.computeEndIdx)
       mimcPayload.mimcHash = bigIntToBytes(multiMiMC7(mimcInputs.map(bytesToBigInt), bytesToBigInt(mimcPayload.previousRValue)), 32)
+      mimcPayload.mimcHash = overrideDataMimc ?? mimcPayload.mimcHash
       mimcPayload.previousRValue = previousRValue.slice()
 
       const boxes = this.getBoxRefs(mimcPayload.mimcHashPreimage)
@@ -244,7 +245,7 @@ export class MIMCClient {
       const suggestedParams = await this.algod.getTransactionParams().do()
       for (let i = 0; i < lsigCount; i++) {
         const note: Uint8Array = MIMCClient.encodeMIMCPayload(mimcPayload).slice(i * MAX_NOTE_FIELD_SIZE, (i + 1) * MAX_NOTE_FIELD_SIZE)
-        const lsig = i === 0 ? mimcHasherLSIG : dummyLsig
+        const lsig = (i === 0 && !overrideDataMimc) ? mimcHasherLSIG : dummyLsig
         const lsigTx = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
           from: lsig.address(),
           to: lsig.address(),
@@ -281,14 +282,14 @@ export class MIMCClient {
     return allTxIds
   }
 
-  public async verifyMimcHash(data: Uint8Array, simulate: true): Promise<SimulateResponse>;
-  public async verifyMimcHash(data: Uint8Array, simulate?: false): Promise<string[]>;
-  public async verifyMimcHash(data: Uint8Array, simulate: boolean = false): Promise<SimulateResponse | string[]> {
+  public async verifyMimcHash(data: Uint8Array, simulate: true, overrideDataMimc?: Uint8Array): Promise<SimulateResponse>;
+  public async verifyMimcHash(data: Uint8Array, simulate?: false, overrideDataMimc?: Uint8Array): Promise<string[]>;
+  public async verifyMimcHash(data: Uint8Array, simulate: boolean = false, overrideDataMimc?: Uint8Array): Promise<SimulateResponse | string[]> {
     const paddedData = leftPadAsMultiple(data, 32).padded
 
     const dataSha256 = sha256(paddedData)
     const dataMimcAsBigInt = multiMiMC7(chunks(paddedData, 32).map(bytes => { return bytesToBigInt(bytes) }))
-    const dataMimc = bigIntToBytes(dataMimcAsBigInt, 32)
+    const dataMimc = overrideDataMimc ?? bigIntToBytes(dataMimcAsBigInt, 32)
     const boxes = this.getBoxRefs(paddedData)
     const atc = await this.mimcClient
       .compose()

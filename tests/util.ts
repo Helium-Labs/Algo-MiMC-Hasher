@@ -72,3 +72,24 @@ export function assertSimulateResponseErrorFree(simulate: SimulateResponse) {
     AssertDefined(simulate.simulateResponse?.txnGroups[0]?.failureMessage, 'Failure message must be present')
     throw new Error("Simulate Debugging: " + simulate.simulateResponse?.txnGroups[0]?.failureMessage)
 }
+
+export const expectFailure = async (closure: () => Promise<void>) => {
+    let passed = true
+    try {
+        await closure()
+        passed = true
+    } catch {
+        passed = false
+    }
+    if (passed === true) {
+        throw new Error("Expected function call to fail")
+    }
+}
+
+export const suppressError = async (closure: () => Promise<void>) => {
+    try {
+        await closure()
+    } catch {
+        return
+    }
+}
