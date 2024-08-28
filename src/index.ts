@@ -1,5 +1,5 @@
 import algosdk, { bigIntToBytes, bytesToBigInt } from 'algosdk'
-import { chunks, leftPadAsMultiple, base64ToBase64url, sha256, getTransactionSignerFromMnemonic, getRandomBytes } from './util'
+import { base64ToBase64url, sha256, getTransactionSignerFromMnemonic, getRandomBytes } from './util'
 import { MimcClient } from './PuyaContracts/build/MIMC.client'
 import { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account'
 import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount'
@@ -11,7 +11,7 @@ import { compileTeal } from '@algorandfoundation/algokit-utils'
 import * as crypto from 'crypto'
 import mimcHasherARC32 from './PuyaContracts/build/MIMC.arc32.json'
 import { setTealSourceMapForTxn } from './util'
-import { multiMiMC7 } from 'mimc-hasher'
+import { multiMiMC7, BinaryFormat } from 'mimc-hasher'
 
 export { getTransactionSignerFromMnemonic }
 
@@ -148,7 +148,7 @@ export class MIMCClient {
       computeStartIdx: 0,
       computeEndIdx: 0,
       constants: Buffer.from(MIMC_CONSTANTS_B64, 'base64'),
-      mimcHashPreimage: leftPadAsMultiple(dataCopy, 32).padded,
+      mimcHashPreimage: BinaryFormat.leftPadAsMultiple(dataCopy, 32).padded,
     }
     const encodedMIMCPayload: Uint8Array = MIMCClient.encodeMIMCPayload(mimcPayload)
     const noteCount = Math.ceil(encodedMIMCPayload.length / MAX_NOTE_FIELD_SIZE)
@@ -204,7 +204,7 @@ export class MIMCClient {
       computeStartIdx: 0,
       computeEndIdx: 0,
       constants: Buffer.from(MIMC_CONSTANTS_B64, 'base64'),
-      mimcHashPreimage: leftPadAsMultiple(dataCopy, 32).padded,
+      mimcHashPreimage: BinaryFormat.leftPadAsMultiple(dataCopy, 32).padded,
     }
 
     const getNumChunks = (mimcPreimage: Uint8Array) => {
@@ -227,8 +227,8 @@ export class MIMCClient {
 
       mimcPayload.computeStartIdx = completedChunks
       mimcPayload.computeEndIdx = completedChunks + numChunksToHash
-      const mimcInputs = chunks(mimcPayload.mimcHashPreimage, 32).slice(mimcPayload.computeStartIdx, mimcPayload.computeEndIdx)
-      mimcPayload.mimcHash = bigIntToBytes(multiMiMC7(mimcInputs.map(bytesToBigInt), bytesToBigInt(mimcPayload.previousRValue)), 32)
+      const mimcInputs = mimcPayload.mimcHashPreimage.slice(mimcPayload.computeStartIdx * 32, mimcPayload.computeEndIdx * 32)
+      mimcPayload.mimcHash = bigIntToBytes(multiMiMC7(mimcInputs, bytesToBigInt(mimcPayload.previousRValue)), 32)
       mimcPayload.mimcHash = overrideDataMimc ?? mimcPayload.mimcHash
       mimcPayload.previousRValue = previousRValue.slice()
 
@@ -289,10 +289,9 @@ export class MIMCClient {
   public async verifyMimcHash(data: Uint8Array, simulate: boolean = false, overrideDataMimc?: Uint8Array): Promise<SimulateResponse | string[]> {
     const dataAsUint8Array = Uint8Array.from(data)
     const dataCopy = dataAsUint8Array.slice()
-    const paddedData = leftPadAsMultiple(dataCopy, 32).padded
-
+    const paddedData = BinaryFormat.leftPadAsMultiple(dataCopy, 32).padded
     const dataSha256 = sha256(paddedData)
-    const dataMimcAsBigInt = multiMiMC7(chunks(paddedData, 32).map(bytes => { return bytesToBigInt(bytes) }))
+    const dataMimcAsBigInt = multiMiMC7(BinaryFormat.leftPadAsMultiple(dataCopy, 32).padded)
     const dataMimc = overrideDataMimc ?? bigIntToBytes(dataMimcAsBigInt, 32)
     const boxes = this.getBoxRefs(paddedData)
     const atc = await this.mimcClient

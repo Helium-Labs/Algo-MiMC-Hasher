@@ -2597,10 +2597,10 @@ miller-rabin@^4.0.0:
     bn.js "^4.0.0"
     brorand "^1.0.1"
 
-mimc-hasher@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/mimc-hasher/-/mimc-hasher-1.0.9.tgz"
-  integrity sha512-uuJ0g0wZxElrGW+Cv7XPYEcc8mC65k2kBnlsNHok4hF8TVv7Pv+c251VUG+UPH6B+KE/+w+kuLJ0ZB0iLo+fZQ==
+mimc-hasher@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/mimc-hasher/-/mimc-hasher-1.2.0.tgz#fc2836c17b623923bc92b6be7a93b7e285d82551"
+  integrity sha512-LY9dAM9of7Xp3fEY7P1DEeGIBpmn0LW4sTyKMNhcnD2mjmULXAKHU5ANA9l3jmQ/PDMJQXJw1SDCq36cKOqlog==
 
 mimic-fn@^2.1.0:
   version "2.1.0"
