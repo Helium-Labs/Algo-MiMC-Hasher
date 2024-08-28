@@ -147,10 +147,10 @@ aggregate_gtxn_notes_for_header@1:
     frame_dig 2
     frame_dig 1
     <
-    bz aggregate_gtxn_notes_after_for@5
-    frame_dig 2
+    bz aggregate_gtxn_notes_after_for@4
     // src/PuyaContracts/common.py:32
     // note: Bytes = gtxn.Transaction(i).note
+    frame_dig 2
     gtxns Note
     // src/PuyaContracts/common.py:33
     // data += note
@@ -166,7 +166,7 @@ aggregate_gtxn_notes_for_header@1:
     frame_bury 2
     b aggregate_gtxn_notes_for_header@1
 
-aggregate_gtxn_notes_after_for@5:
+aggregate_gtxn_notes_after_for@4:
     // src/PuyaContracts/common.py:34
     // return data
     frame_dig 0
@@ -215,12 +215,11 @@ multimimc7_for_header@1:
     frame_dig 1
     frame_dig 0
     <
-    bz multimimc7_after_for@5
-    frame_dig 1
+    bz multimimc7_after_for@4
     // src/PuyaContracts/mimc_hasher/contract.py:49
     // arr_i_bytes: Bytes = extract(arr, 32 * i, 32)
     int 32
-    uncover 1
+    frame_dig 1
     *
     frame_dig -3
     uncover 1
@@ -261,7 +260,7 @@ multimimc7_for_header@1:
     frame_bury 1
     b multimimc7_for_header@1
 
-multimimc7_after_for@5:
+multimimc7_after_for@4:
     // src/PuyaContracts/mimc_hasher/contract.py:54
     // return r
     frame_dig -1
@@ -276,7 +275,6 @@ mimc7:
     // def mimc7(x: BigUInt, k: BigUInt, C: Bytes) -> BigUInt:
     proto 3 1
     int 0
-    byte ""
     // src/PuyaContracts/mimc_hasher/contract.py:18
     // t: BigUInt = x + k
     frame_dig -3
@@ -291,24 +289,22 @@ mimc7:
 mimc7_for_header@1:
     // src/PuyaContracts/mimc_hasher/contract.py:19
     // for i in urange(91):
-    frame_dig 3
+    frame_dig 2
     int 91
     <
-    bz mimc7_after_for@7
-    frame_dig 3
-    dup
-    frame_bury 1
+    bz mimc7_after_for@6
     // src/PuyaContracts/mimc_hasher/contract.py:20
     // if i > 0:
+    frame_dig 2
     int 0
     >
-    frame_dig 2
+    frame_dig 1
     frame_bury 0
     bz mimc7_after_if_else@4
     // src/PuyaContracts/mimc_hasher/contract.py:21
     // const: Bytes = extract(C, 32 * i, 32)
     int 32
-    frame_dig 1
+    frame_dig 2
     *
     frame_dig -1
     uncover 1
@@ -316,7 +312,7 @@ mimc7_for_header@1:
     extract3
     // src/PuyaContracts/mimc_hasher/contract.py:23
     // t = t + const_bigUint + k
-    frame_dig 2
+    frame_dig 1
     uncover 1
     b+
     frame_dig -2
@@ -392,19 +388,19 @@ mimc7_after_if_else@4:
     // src/PuyaContracts/mimc_hasher/contract.py:35
     // t = tMul % P
     b%
-    frame_bury 2
+    frame_bury 1
     // src/PuyaContracts/mimc_hasher/contract.py:19
     // for i in urange(91):
-    frame_dig 3
+    frame_dig 2
     int 1
     +
-    frame_bury 3
+    frame_bury 2
     b mimc7_for_header@1
 
-mimc7_after_for@7:
+mimc7_after_for@6:
     // src/PuyaContracts/mimc_hasher/contract.py:37
     // result: BigUInt = (t + k) % P
-    frame_dig 2
+    frame_dig 1
     frame_dig -2
     b+
     // src/PuyaContracts/mimc_hasher/contract.py:15-16

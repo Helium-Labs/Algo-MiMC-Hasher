@@ -58,23 +58,26 @@ export class MIMCClient {
     )
 
     const createApp = this.mimcClient.create.create
-    const created = await createApp([])
+    const mimcHasherLSIG = await getMIMCHasherLSIG(this.algod, [])
+
+    const created = await createApp([], {
+      deployTimeParams: {
+        MIMC_HASHER_ADDR: Buffer.from(algosdk.decodeAddress(mimcHasherLSIG.address()).publicKey)
+      }
+    })
 
     this.mimcAppId = Number(created.appId)
     await this.mimcClient.appClient.fundAppAccount({
       amount: AlgoAmount.Algos(1)
     })
 
-    const approvalSourceBuf = Buffer.from(mimcHasherARC32.source.approval, 'base64')
-    const approvalSource = approvalSourceBuf.toString('utf8')
-    const compiledTeal: CompiledTeal = await compileTeal(approvalSource, this.algod)
+    const compiledTeal: CompiledTeal = created.compiledApproval!
     const programHash = crypto.createHash('SHA-512/256').update(Buffer.from(compiledTeal.compiled, 'base64')).digest('base64')
-
     compiledTeal.sourceMap.sources = [`${base64ToBase64url(programHash)}.teal`]
     setTealSourceMapForTxn(`${this.mimcAppId}`, {
       sourceMap: compiledTeal.sourceMap,
       programHash,
-      source: approvalSource
+      source: Buffer.from(mimcHasherARC32.source.approval, 'base64').toString('utf8')
     })
 
     return created
@@ -82,13 +85,16 @@ export class MIMCClient {
 
   getBoxRefs(data: Uint8Array, resultOnly: boolean = false): algosdk.BoxReference[] {
     const padded = BinaryFormat.leftPadAsMultiple(data, 32).padded
-    const prefixes: string[] = [
-      'num_chunks',
-      'num_completed',
-      'result'
-    ]
-    if (resultOnly === false) {
-      prefixes.push('r')
+    let prefixes: string[]
+    if (resultOnly) {
+      prefixes = ['result']
+    } else {
+      prefixes = [
+        'num_chunks',
+        'num_completed',
+        'result',
+        'r'
+      ]
     }
     const sha256Hash = sha256(padded)
     const names = prefixes.map(prefix => {

@@ -8,6 +8,7 @@ from algopy import (
     Account,
     gtxn,
     Global,
+    TemplateVar
 )
 from algopy.op import sha256, concat, btoi
 from ..common import (
@@ -15,9 +16,6 @@ from ..common import (
     decode_dynamic_bytes,
     MIMCPayload,
 )
-
-# Address of the MIMC Hasher LSIG
-MIMC_HASHER_ADDR_B64: str = "gRztmhbv6+WrxGhOQcUx2AVbU+hBR9h29AEUV8gUdkc="
 
 
 class MIMC(ARC4Contract):
@@ -87,10 +85,8 @@ class MIMC(ARC4Contract):
 
         # MIMC Hasher integrity
         assert Global.group_size >= 2, "Must be at least 2 transactions in the group"
-        MIMC_HASHER_LSIG_ACCOUNT_ADDR: Bytes = Bytes.from_base64(MIMC_HASHER_ADDR_B64)
-        MIMC_HASHER_LSIG_ACCOUNT: Account = Account.from_bytes(
-            MIMC_HASHER_LSIG_ACCOUNT_ADDR
-        )
+        MIMC_HASHER_LSIG_ACCOUNT: Account = TemplateVar[Account]("MIMC_HASHER_ADDR")
+
         MIMC_HASHER_LSIG_TXN = gtxn.PaymentTransaction(1)
         assert (
             MIMC_HASHER_LSIG_TXN.sender == MIMC_HASHER_LSIG_ACCOUNT
@@ -103,12 +99,6 @@ class MIMC(ARC4Contract):
 
     @arc4.abimethod()
     def verify_hash(self, data_sha256: Bytes, data_mimc: Bytes) -> None:
-        # Assert the computation is complete
-        num_chunks_box = Box(UInt64, key=concat(b"num_chunks", data_sha256))
-        num_completed_box = Box(UInt64, key=concat(b"num_completed", data_sha256))
-        assert (
-            num_completed_box.value >= num_chunks_box.value
-        ), "Number of compute iterations must at least exceed number of 32 byte chunks"
-        # Asserts the hashes are sha256/mimc of the data
+        # Given sha256(data), assert data_mimc === mimc(data)
         result_box = Box(Bytes, key=concat(b"result", data_sha256))
         assert result_box.value == data_mimc, "MIMC hash matches computed value"
