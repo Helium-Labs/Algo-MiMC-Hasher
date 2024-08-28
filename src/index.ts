@@ -80,15 +80,17 @@ export class MIMCClient {
     return created
   }
 
-  getBoxRefs(data: Uint8Array): algosdk.BoxReference[] {
-    const prefixes = [
-      'r',
-      'data',
+  getBoxRefs(data: Uint8Array, resultOnly: boolean = false): algosdk.BoxReference[] {
+    const padded = BinaryFormat.leftPadAsMultiple(data, 32).padded
+    const prefixes: string[] = [
       'num_chunks',
       'num_completed',
       'result'
     ]
-    const sha256Hash = sha256(data)
+    if (resultOnly === false) {
+      prefixes.push('r')
+    }
+    const sha256Hash = sha256(padded)
     const names = prefixes.map(prefix => {
       const bufPrefix = Buffer.from(prefix, 'utf8')
       const buf = Buffer.concat([bufPrefix, sha256Hash])
@@ -293,7 +295,7 @@ export class MIMCClient {
     const dataSha256 = sha256(paddedData)
     const dataMimcAsBigInt = multiMiMC7(BinaryFormat.leftPadAsMultiple(dataCopy, 32).padded)
     const dataMimc = overrideDataMimc ?? bigIntToBytes(dataMimcAsBigInt, 32)
-    const boxes = this.getBoxRefs(paddedData)
+    const boxes = this.getBoxRefs(dataCopy, true)
     const atc = await this.mimcClient
       .compose()
       .verifyHash([
