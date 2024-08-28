@@ -140,7 +140,8 @@ export class MIMCClient {
   public async initialize(data: Uint8Array, simulate: true): Promise<SimulateResponse>;
   public async initialize(data: Uint8Array, simulate?: false): Promise<string[]>;
   public async initialize(data: Uint8Array, simulate: boolean = false): Promise<SimulateResponse | string[]> {
-    const dataCopy = data.slice()
+    const dataAsUint8Array = Uint8Array.from(data)
+    const dataCopy = dataAsUint8Array.slice()
     const mimcPayload: MIMCPayload = {
       mimcHash: Buffer.alloc(32),
       previousRValue: Buffer.alloc(32),
@@ -194,7 +195,8 @@ export class MIMCClient {
   public async multimimc7(data: Uint8Array, simulate: true, overrideDataMimc?: Uint8Array): Promise<SimulateResponse>;
   public async multimimc7(data: Uint8Array, simulate?: false, overrideDataMimc?: Uint8Array): Promise<string[]>;
   public async multimimc7(data: Uint8Array, simulate: boolean = false, overrideDataMimc?: Uint8Array): Promise<SimulateResponse | string[]> {
-    const dataCopy = data.slice()
+    const dataAsUint8Array = Uint8Array.from(data)
+    const dataCopy = dataAsUint8Array.slice()
     let previousRValue: Uint8Array = Buffer.alloc(32)
     const mimcPayload: MIMCPayload = {
       mimcHash: Buffer.alloc(32),
@@ -285,7 +287,9 @@ export class MIMCClient {
   public async verifyMimcHash(data: Uint8Array, simulate: true, overrideDataMimc?: Uint8Array): Promise<SimulateResponse>;
   public async verifyMimcHash(data: Uint8Array, simulate?: false, overrideDataMimc?: Uint8Array): Promise<string[]>;
   public async verifyMimcHash(data: Uint8Array, simulate: boolean = false, overrideDataMimc?: Uint8Array): Promise<SimulateResponse | string[]> {
-    const paddedData = leftPadAsMultiple(data, 32).padded
+    const dataAsUint8Array = Uint8Array.from(data)
+    const dataCopy = dataAsUint8Array.slice()
+    const paddedData = leftPadAsMultiple(dataCopy, 32).padded
 
     const dataSha256 = sha256(paddedData)
     const dataMimcAsBigInt = multiMiMC7(chunks(paddedData, 32).map(bytes => { return bytesToBigInt(bytes) }))

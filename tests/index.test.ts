@@ -23,8 +23,7 @@ test("MIMC of small value", async () => {
   const mimcClient = new MIMCClient(algod, signer)
 
   await mimcClient.createMimcApp()
-  const dataAsBuf = Buffer.from('hello', 'utf8')
-  const data = Uint8Array.from(dataAsBuf)
+  const data = Buffer.from('hello', 'utf8')
 
   await mimcClient.initialize(data)
   await mimcClient.multimimc7(data)
@@ -40,8 +39,7 @@ test("MIMC of large RSA signing modulus (n)", async () => {
   const mimcClient = new MIMCClient(algod, signer)
 
   await mimcClient.createMimcApp()
-  const dataAsBuf = Buffer.from(googleSigningModulus, 'base64url')
-  const data = Uint8Array.from(dataAsBuf)
+  const data = Buffer.from(googleSigningModulus, 'base64url')
 
   await mimcClient.initialize(data)
   await mimcClient.multimimc7(data)
@@ -55,8 +53,7 @@ test("MIMC of OIDC issuer", async () => {
   const mimcClient = new MIMCClient(algod, signer)
 
   await mimcClient.createMimcApp()
-  const dataAsBuf = Buffer.from("https://accounts.google.com", 'utf8')
-  const data = Uint8Array.from(dataAsBuf)
+  const data = Buffer.from("https://accounts.google.com", 'utf8')
 
   await mimcClient.initialize(data)
   await mimcClient.multimimc7(data)
@@ -70,8 +67,7 @@ test("Expect failure: invalid MIMC hash should fail", async () => {
   const mimcClient = new MIMCClient(algod, signer)
 
   await mimcClient.createMimcApp()
-  const dataAsBuf = Buffer.from("https://accounts.google.com", 'utf8')
-  const data = Uint8Array.from(dataAsBuf)
+  const data = Buffer.from("https://accounts.google.com", 'utf8')
 
   const invalidMIMC: Uint8Array = await getRandomBytes(32)
 
