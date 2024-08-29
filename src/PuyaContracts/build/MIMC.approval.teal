@@ -3,26 +3,23 @@
 PuyaContracts.MIMC.contract.MIMC.approval_program:
     // src/PuyaContracts/MIMC/contract.py:21
     // class MIMC(ARC4Contract):
-    txna ApplicationArgs 0
     method "create()void"
     method "initialize()void"
     method "multimimc7()void"
     method "verify_hash(byte[],byte[])void"
-    uncover 4
+    txna ApplicationArgs 0
     match main_create_route@1 main_initialize_route@2 main_multimimc7_route@3 main_verify_hash_route@4
-    b main_switch_case_default@5
+    err // reject transaction
 
 main_create_route@1:
     // src/PuyaContracts/MIMC/contract.py:22
     // @arc4.abimethod(create="require")
     txn OnCompletion
-    int NoOp
-    ==
+    !
     assert // OnCompletion is NoOp
     txn ApplicationID
     !
     assert // is creating
-    callsub create
     int 1
     return
 
@@ -30,8 +27,7 @@ main_initialize_route@2:
     // src/PuyaContracts/MIMC/contract.py:26
     // @arc4.abimethod()
     txn OnCompletion
-    int NoOp
-    ==
+    !
     assert // OnCompletion is NoOp
     txn ApplicationID
     assert // is not creating
@@ -43,8 +39,7 @@ main_multimimc7_route@3:
     // src/PuyaContracts/MIMC/contract.py:47
     // @arc4.abimethod()
     txn OnCompletion
-    int NoOp
-    ==
+    !
     assert // OnCompletion is NoOp
     txn ApplicationID
     assert // is not creating
@@ -56,8 +51,7 @@ main_verify_hash_route@4:
     // src/PuyaContracts/MIMC/contract.py:100
     // @arc4.abimethod()
     txn OnCompletion
-    int NoOp
-    ==
+    !
     assert // OnCompletion is NoOp
     txn ApplicationID
     assert // is not creating
@@ -72,20 +66,6 @@ main_verify_hash_route@4:
     callsub verify_hash
     int 1
     return
-
-main_switch_case_default@5:
-    // src/PuyaContracts/MIMC/contract.py:21
-    // class MIMC(ARC4Contract):
-    err // reject transaction
-
-
-// PuyaContracts.MIMC.contract.MIMC.create() -> void:
-create:
-    // src/PuyaContracts/MIMC/contract.py:22-23
-    // @arc4.abimethod(create="require")
-    // def create(self) -> None:
-    proto 0 0
-    retsub
 
 
 // PuyaContracts.MIMC.contract.MIMC.initialize() -> void:
@@ -103,12 +83,11 @@ initialize:
     dup
     int 82
     extract_uint16
-    cover 1
+    swap
     dup
     len
-    cover 1
-    uncover 2
-    uncover 2
+    swap
+    cover 2
     substring3
     // src/PuyaContracts/MIMC/contract.py:31-33
     // mimc_hash_preimage: Bytes = decode_dynamic_bytes(
@@ -149,7 +128,7 @@ initialize:
     // src/PuyaContracts/MIMC/contract.py:44
     // num_completed_box = Box(UInt64, key=concat(b"num_completed", sha256_id))
     byte 0x6e756d5f636f6d706c65746564
-    uncover 1
+    swap
     concat
     // src/PuyaContracts/MIMC/contract.py:45
     // num_completed_box.value = UInt64(0)
@@ -173,8 +152,6 @@ aggregate_gtxn_notes:
     global GroupSize
     // src/PuyaContracts/common.py:31
     // for i in urange(group_size):
-    int 1
-    assert // Step cannot be zero
     int 0
 
 aggregate_gtxn_notes_for_header@1:
@@ -187,16 +164,16 @@ aggregate_gtxn_notes_for_header@1:
     // src/PuyaContracts/common.py:32
     // note: Bytes = gtxn.Transaction(i).note
     frame_dig 2
+    dup
     gtxns Note
     // src/PuyaContracts/common.py:33
     // data += note
     frame_dig 0
-    uncover 1
+    swap
     concat
     frame_bury 0
     // src/PuyaContracts/common.py:31
     // for i in urange(group_size):
-    frame_dig 2
     int 1
     +
     frame_bury 2
@@ -205,8 +182,6 @@ aggregate_gtxn_notes_for_header@1:
 aggregate_gtxn_notes_after_for@4:
     // src/PuyaContracts/common.py:34
     // return data
-    frame_dig 0
-    frame_bury 0
     retsub
 
 
@@ -239,25 +214,19 @@ multimimc7:
     // src/PuyaContracts/MIMC/contract.py:51
     // start_idx: UInt64 = btoi(mimc_payload.compute_start_idx.bytes)
     dup
-    int 64
-    int 8
-    extract3 // on error: Index access is out of bounds
+    extract 64 8 // on error: Index access is out of bounds
     btoi
-    cover 1
+    swap
     // src/PuyaContracts/MIMC/contract.py:52
     // end_idx: UInt64 = btoi(mimc_payload.compute_end_idx.bytes)
     dup
-    int 72
-    int 8
-    extract3 // on error: Index access is out of bounds
+    extract 72 8 // on error: Index access is out of bounds
     btoi
-    cover 1
+    cover 2
     // src/PuyaContracts/MIMC/contract.py:54
     // mimc_hash: Bytes = mimc_payload.mimc_hash.bytes
     dup
-    int 0
-    int 32
-    extract3 // on error: Index access is out of bounds
+    extract 0 32 // on error: Index access is out of bounds
     cover 3
     // src/PuyaContracts/MIMC/contract.py:55-57
     // previous_r_value: BigUInt = BigUInt.from_bytes(
@@ -266,25 +235,22 @@ multimimc7:
     dup
     // src/PuyaContracts/MIMC/contract.py:56
     // mimc_payload.previous_r_value.bytes
-    int 32
-    int 32
-    extract3 // on error: Index access is out of bounds
+    extract 32 32 // on error: Index access is out of bounds
     // src/PuyaContracts/MIMC/contract.py:55-57
     // previous_r_value: BigUInt = BigUInt.from_bytes(
     //     mimc_payload.previous_r_value.bytes
     // )
-    cover 1
+    swap
     // src/PuyaContracts/MIMC/contract.py:59
     // mimc_payload.mimc_hash_preimage.bytes
     dup
     int 82
     extract_uint16
-    cover 1
+    swap
     dup
     len
-    cover 1
-    uncover 2
-    uncover 2
+    swap
+    cover 2
     substring3
     // src/PuyaContracts/MIMC/contract.py:58-60
     // mimc_hash_preimage: Bytes = decode_dynamic_bytes(
@@ -316,7 +282,6 @@ multimimc7:
     box_get
     assert // check Box exists
     uncover 3
-    uncover 1
     b==
     // src/PuyaContracts/MIMC/contract.py:68-70
     // assert (
@@ -333,17 +298,17 @@ multimimc7:
     // assert num_completed_box.value == start_idx, "Start index must be contiguous"
     dup
     box_get
-    cover 1
+    swap
     btoi
-    uncover 1
+    swap
     assert // check Box exists
-    dig 5
+    dig 4
     ==
     assert // Start index must be contiguous
     // src/PuyaContracts/MIMC/contract.py:76-77
     // # end indx integrity
     // assert start_idx < end_idx, "Start idx must be less than end idx"
-    uncover 4
+    uncover 3
     dig 4
     <
     assert // Start idx must be less than end idx
@@ -351,23 +316,21 @@ multimimc7:
     // assert end_idx <= num_chunks_box.value
     dig 2
     box_get
-    cover 1
+    swap
     btoi
-    uncover 1
+    swap
     assert // check Box exists
     dig 4
-    uncover 1
-    <=
+    >=
     assert
     // src/PuyaContracts/MIMC/contract.py:80-81
     // # Update r value
     // r_box.value = BigUInt.from_bytes(mimc_hash)
-    uncover 4
-    dig 2
+    dig 1
     box_del
     pop
-    uncover 2
-    uncover 1
+    swap
+    uncover 4
     box_put
     // src/PuyaContracts/MIMC/contract.py:83-84
     // # Update number of hashed chunks
@@ -375,7 +338,7 @@ multimimc7:
     uncover 2
     itob
     dig 1
-    uncover 1
+    swap
     box_put
     // src/PuyaContracts/MIMC/contract.py:86-87
     // # MIMC Hasher integrity
@@ -398,7 +361,6 @@ multimimc7:
     // src/PuyaContracts/MIMC/contract.py:92
     // MIMC_HASHER_LSIG_TXN.sender == MIMC_HASHER_LSIG_ACCOUNT
     gtxns Sender
-    uncover 1
     ==
     // src/PuyaContracts/MIMC/contract.py:91-93
     // assert (
@@ -409,15 +371,15 @@ multimimc7:
     // # Record hash result once all chunks hashed
     // if num_completed_box.value >= num_chunks_box.value:
     box_get
-    cover 1
+    swap
     btoi
-    cover 1
+    swap
     assert // check Box exists
-    uncover 1
+    swap
     box_get
-    cover 1
+    swap
     btoi
-    uncover 1
+    swap
     assert // check Box exists
     >=
     bz multimimc7_after_if_else@2
@@ -430,10 +392,13 @@ multimimc7:
     // result_box.value = r_box.value.bytes
     frame_dig 1
     box_get
+    swap
+    cover 2
     assert // check Box exists
-    dig 1
+    dup
     box_del
     pop
+    swap
     box_put
 
 multimimc7_after_if_else@2:

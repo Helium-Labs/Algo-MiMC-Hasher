@@ -7,7 +7,6 @@ from ..common import (
     decode_dynamic_bytes,
 )
 
-# Constants
 mimc7_constants_sha256_hash: str = "w14x2USkTeC2FqzT08l1Mub5hic3iA9MUkJDZpp5hp0="
 
 @subroutine
@@ -15,7 +14,7 @@ def mimc7(x: BigUInt, k: BigUInt, C: Bytes) -> BigUInt:
     # Fact: t**n MOD P = (t**(n-1) MOD P) * t
     P: BigUInt = BigUInt(b254_r_prime_int)
     tMul: BigUInt = BigUInt(0)
-    t: BigUInt = x + k
+    t: BigUInt = (x + k) % P
     for i in urange(91):
         if i > 0:
             const: Bytes = extract(C, 32 * i, 32)
@@ -43,15 +42,16 @@ def mimc7(x: BigUInt, k: BigUInt, C: Bytes) -> BigUInt:
 def multimimc7(arr: Bytes, C: Bytes, r: BigUInt) -> BigUInt:
     P: BigUInt = BigUInt(b254_r_prime_int)
     h: BigUInt = BigUInt(0)
+    k: BigUInt = r
     n_inputs: UInt64 = arr.length // 32
     input: BigUInt = BigUInt(0)
     for i in urange(n_inputs):
         arr_i_bytes: Bytes = extract(arr, 32 * i, 32)
         arr_i: BigUInt = BigUInt.from_bytes(arr_i_bytes)
         input = arr_i % P
-        h = mimc7(input, r, C)
-        r = (r + input + h) % P
-    return r
+        h = mimc7(input, k, C)
+        k = (k + input + h) % P
+    return k
 
 
 @logicsig

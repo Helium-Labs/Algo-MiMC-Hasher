@@ -205,7 +205,7 @@ export class MIMCClient {
   public async multimimc7(data: Uint8Array, simulate: boolean = false, overrideDataMimc?: Uint8Array): Promise<SimulateResponse | string[]> {
     const dataAsUint8Array = Uint8Array.from(data)
     const dataCopy = dataAsUint8Array.slice()
-    let previousRValue: Uint8Array = Buffer.alloc(32)
+    let previousRValue: Uint8Array = Uint8Array.from(Buffer.alloc(32))
     const mimcPayload: MIMCPayload = {
       mimcHash: Buffer.alloc(32),
       previousRValue: previousRValue.slice(),
@@ -236,9 +236,9 @@ export class MIMCClient {
       mimcPayload.computeStartIdx = completedChunks
       mimcPayload.computeEndIdx = completedChunks + numChunksToHash
       const mimcInputs = mimcPayload.mimcHashPreimage.slice(mimcPayload.computeStartIdx * 32, mimcPayload.computeEndIdx * 32)
+      mimcPayload.previousRValue = previousRValue.slice()
       mimcPayload.mimcHash = bigIntToBytes(multiMiMC7(mimcInputs, bytesToBigInt(mimcPayload.previousRValue)), 32)
       mimcPayload.mimcHash = overrideDataMimc ?? mimcPayload.mimcHash
-      mimcPayload.previousRValue = previousRValue.slice()
 
       const boxes = this.getBoxRefs(mimcPayload.mimcHashPreimage)
 
@@ -278,14 +278,19 @@ export class MIMCClient {
       atc.buildGroup()
 
       if (simulate) {
-        const simulatedResponse: SimulateResponse = await atc.simulate(this.algod, simreq)
-        return simulatedResponse
+        try {
+          const txIds = await atc.submit(this.algod)
+          allTxIds = allTxIds.concat(txIds)
+        } catch (e) {
+          const simulatedResponse: SimulateResponse = await atc.simulate(this.algod, simreq)
+          return simulatedResponse
+        }
+      } else {
+        const txIds = await atc.submit(this.algod)
+        allTxIds = allTxIds.concat(txIds)
       }
 
-      const txIds = await atc.submit(this.algod)
-      allTxIds = allTxIds.concat(txIds)
-
-      previousRValue = mimcPayload.mimcHash.slice()
+      previousRValue = Uint8Array.from(mimcPayload.mimcHash).slice()
       completedChunks += numChunksToHash
     }
 

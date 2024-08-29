@@ -3,17 +3,26 @@ import algosdk from 'algosdk';
 import 'dotenv/config'
 import { MIMCClient } from '../src'
 import { expectFailure } from './util';
-
+import { getAlgokitTestkit, fundAccount } from 'algokit-testkit'
 const TEST_MNEMONIC: string = process.env.TEST_MNEMONIC!
 
+type Network = 'devnet' | 'testnet';
+let ENV: Network = 'devnet' as Network
 const getAlgod = async () => {
-  // Define the Algorand node connection parameters
-  const algodToken = '' // free service does not require tokens
-  const algodServer = 'https://testnet-api.algonode.cloud'
-  const algodPort = 443
+  if (ENV === 'testnet') {  // Type-safe comparison
+    // Define the Algorand node connection parameters
+    const algodToken = '' // free service does not require tokens
+    const algodServer = 'https://testnet-api.algonode.cloud'
+    const algodPort = 443
 
-  // Create an instance of the algod client
-  return new algosdk.Algodv2(algodToken, algodServer, algodPort)
+    // Create an instance of the algod client
+    return new algosdk.Algodv2(algodToken, algodServer, algodPort)
+  } else {
+    const { algod } = await getAlgokitTestkit()
+    const signer = getTransactionSignerFromMnemonic(TEST_MNEMONIC);
+    await fundAccount(signer.addr, 100e6)
+    return algod
+  }
 }
 
 test("MIMC of small value", async () => {
@@ -24,6 +33,21 @@ test("MIMC of small value", async () => {
 
   await mimcClient.createMimcApp()
   const data = Buffer.from('hello', 'utf8')
+
+  await mimcClient.initialize(data)
+  await mimcClient.multimimc7(data)
+  await mimcClient.verifyMimcHash(data)
+}, 120_000)
+
+test("MIMC of large chunked RSA signing modulus (n)", async () => {
+  const chunkedMod = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3cDhS7lBAXcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsq57HVp5JAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHsCu9D3Hw61AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAfE/Ikcy8kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABGgMEuORREqQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPr8n/sfSurLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXMYAs2ygVBYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfIRuQZ0+euAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK2ZrYpIvXfzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwRkLIbhNT1gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHip5MrqmuswAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJPWOcwplPTUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3OnICBMCxGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzIORT6yJW/QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANnsvgxDRElPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQ3NfqSaI9gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABSHHu7IXbZ0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEl3VtXnubXrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATQburlx+s5EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADXeS0eB9CpqwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH9ePO/7DvINAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWtKI/UKKapIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg3hVI9sAwYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADi7Xu0leevuAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5nhVlLe74AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACY9V10RtTtUwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVzRt2TzaNjAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjIbGjRyarNQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABshSWYBhi4+wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALqun9x20hEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA35DOjMFKgrYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACidXm3NRurIw=="
+  const algod = await getAlgod()
+  const signer = getTransactionSignerFromMnemonic(TEST_MNEMONIC);
+
+  const mimcClient = new MIMCClient(algod, signer)
+
+  await mimcClient.createMimcApp()
+  const data = Uint8Array.from(Buffer.from(chunkedMod, 'base64'))
 
   await mimcClient.initialize(data)
   await mimcClient.multimimc7(data)

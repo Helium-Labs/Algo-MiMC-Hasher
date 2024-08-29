@@ -10,7 +10,7 @@ for dir in "$script_dir"/*/; do
         # Check if contract.py exists in the current directory
         if [ -f "$dir/contract.py" ]; then
             # Run the algokit command
-            algokit compile py "$dir/contract.py" -g 2 -O 0 --out-dir "$script_dir/build"
+            algokit compile py "$dir/contract.py" -g 2 -O 2 --out-dir "$script_dir/build"
             
             # Get the base name of the directory
             base_name=$(basename "$dir")

@@ -8,7 +8,7 @@ from algopy import (
     Account,
     gtxn,
     Global,
-    TemplateVar
+    TemplateVar,
 )
 from algopy.op import sha256, concat, btoi
 from ..common import (

@@ -15,44 +15,36 @@ PuyaContracts.mimc_hasher.contract.mimc_hasher:
     // src/PuyaContracts/mimc_hasher/contract.py:66
     // start_idx: UInt64 = btoi(mimc_payload.compute_start_idx.bytes)
     dup
-    int 64
-    int 8
-    extract3 // on error: Index access is out of bounds
+    extract 64 8 // on error: Index access is out of bounds
     btoi
-    cover 1
+    swap
     // src/PuyaContracts/mimc_hasher/contract.py:67
     // end_idx: UInt64 = btoi(mimc_payload.compute_end_idx.bytes)
     dup
-    int 72
-    int 8
-    extract3 // on error: Index access is out of bounds
+    extract 72 8 // on error: Index access is out of bounds
     btoi
-    cover 1
+    swap
     // src/PuyaContracts/mimc_hasher/contract.py:69
     // mimc_hash: BigUInt = BigUInt.from_bytes(mimc_payload.mimc_hash.bytes)
     dup
-    int 0
-    int 32
-    extract3 // on error: Index access is out of bounds
+    extract 0 32 // on error: Index access is out of bounds
     cover 3
     // src/PuyaContracts/mimc_hasher/contract.py:70
     // previous_r_value: BigUInt = BigUInt.from_bytes(mimc_payload.previous_r_value.bytes)
     dup
-    int 32
-    int 32
-    extract3 // on error: Index access is out of bounds
-    cover 1
+    extract 32 32 // on error: Index access is out of bounds
+    cover 3
     // src/PuyaContracts/mimc_hasher/contract.py:72
     // mimc_payload.mimc_hash_preimage.bytes
     dup
     int 82
     extract_uint16
-    cover 1
+    swap
     dup
     len
-    cover 1
+    swap
     dup
-    uncover 3
+    dig 3
     uncover 3
     substring3
     // src/PuyaContracts/mimc_hasher/contract.py:71-73
@@ -60,18 +52,12 @@ PuyaContracts.mimc_hasher.contract.mimc_hasher:
     //     mimc_payload.mimc_hash_preimage.bytes
     // )
     callsub decode_dynamic_bytes
-    cover 1
+    cover 2
     // src/PuyaContracts/mimc_hasher/contract.py:74
     // constants: Bytes = decode_dynamic_bytes(mimc_payload.constants.bytes)
     dup
     int 80
     extract_uint16
-    cover 1
-    dup
-    int 82
-    extract_uint16
-    uncover 1
-    uncover 2
     uncover 2
     substring3
     callsub decode_dynamic_bytes
@@ -90,10 +76,10 @@ PuyaContracts.mimc_hasher.contract.mimc_hasher:
     assert // MIMC Hash constants must be untampered
     // src/PuyaContracts/mimc_hasher/contract.py:82
     // mimc_hash_preimage, start_idx * UInt64(32), end_idx * UInt64(32)
-    uncover 4
+    uncover 3
     int 32
     *
-    uncover 4
+    uncover 3
     int 32
     *
     // src/PuyaContracts/mimc_hasher/contract.py:81-83
@@ -101,15 +87,13 @@ PuyaContracts.mimc_hasher.contract.mimc_hasher:
     //     mimc_hash_preimage, start_idx * UInt64(32), end_idx * UInt64(32)
     // )
     uncover 3
-    uncover 2
-    uncover 2
+    cover 2
     substring3
     // src/PuyaContracts/mimc_hasher/contract.py:87
     // multimimc7(mimc_hash_preimage_segment, constants, previous_r_value) == mimc_hash
-    uncover 1
+    swap
     uncover 2
     callsub multimimc7
-    uncover 1
     b==
     // src/PuyaContracts/mimc_hasher/contract.py:85-88
     // # Compute hash
@@ -137,8 +121,6 @@ aggregate_gtxn_notes:
     global GroupSize
     // src/PuyaContracts/common.py:31
     // for i in urange(group_size):
-    int 1
-    assert // Step cannot be zero
     int 0
 
 aggregate_gtxn_notes_for_header@1:
@@ -151,16 +133,16 @@ aggregate_gtxn_notes_for_header@1:
     // src/PuyaContracts/common.py:32
     // note: Bytes = gtxn.Transaction(i).note
     frame_dig 2
+    dup
     gtxns Note
     // src/PuyaContracts/common.py:33
     // data += note
     frame_dig 0
-    uncover 1
+    swap
     concat
     frame_bury 0
     // src/PuyaContracts/common.py:31
     // for i in urange(group_size):
-    frame_dig 2
     int 1
     +
     frame_bury 2
@@ -169,8 +151,6 @@ aggregate_gtxn_notes_for_header@1:
 aggregate_gtxn_notes_after_for@4:
     // src/PuyaContracts/common.py:34
     // return data
-    frame_dig 0
-    frame_bury 0
     retsub
 
 
@@ -193,7 +173,7 @@ decode_dynamic_bytes:
 
 // PuyaContracts.mimc_hasher.contract.multimimc7(arr: bytes, C: bytes, r: bytes) -> bytes:
 multimimc7:
-    // src/PuyaContracts/mimc_hasher/contract.py:42-43
+    // src/PuyaContracts/mimc_hasher/contract.py:41-42
     // @subroutine
     // def multimimc7(arr: Bytes, C: Bytes, r: BigUInt) -> BigUInt:
     proto 3 1
@@ -205,9 +185,8 @@ multimimc7:
     /
     // src/PuyaContracts/mimc_hasher/contract.py:48
     // for i in urange(n_inputs):
-    int 1
-    assert // Step cannot be zero
     int 0
+    frame_dig -1
 
 multimimc7_for_header@1:
     // src/PuyaContracts/mimc_hasher/contract.py:48
@@ -220,41 +199,41 @@ multimimc7_for_header@1:
     // arr_i_bytes: Bytes = extract(arr, 32 * i, 32)
     int 32
     frame_dig 1
+    dup
+    cover 2
     *
     frame_dig -3
-    uncover 1
+    swap
     int 32
     extract3
-    // src/PuyaContracts/mimc_hasher/contract.py:44
+    // src/PuyaContracts/mimc_hasher/contract.py:43
     // P: BigUInt = BigUInt(b254_r_prime_int)
     byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
     // src/PuyaContracts/mimc_hasher/contract.py:51
     // input = arr_i % P
     b%
     // src/PuyaContracts/mimc_hasher/contract.py:52
-    // h = mimc7(input, r, C)
+    // h = mimc7(input, k, C)
     dup
-    frame_dig -1
+    frame_dig 2
+    dup
+    cover 2
     frame_dig -2
     callsub mimc7
-    cover 1
+    cover 2
     // src/PuyaContracts/mimc_hasher/contract.py:53
-    // r = (r + input + h) % P
-    frame_dig -1
-    uncover 1
+    // k = (k + input + h) % P
     b+
-    uncover 1
     b+
-    // src/PuyaContracts/mimc_hasher/contract.py:44
+    // src/PuyaContracts/mimc_hasher/contract.py:43
     // P: BigUInt = BigUInt(b254_r_prime_int)
     byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
     // src/PuyaContracts/mimc_hasher/contract.py:53
-    // r = (r + input + h) % P
+    // k = (k + input + h) % P
     b%
-    frame_bury -1
+    frame_bury 2
     // src/PuyaContracts/mimc_hasher/contract.py:48
     // for i in urange(n_inputs):
-    frame_dig 1
     int 1
     +
     frame_bury 1
@@ -262,58 +241,60 @@ multimimc7_for_header@1:
 
 multimimc7_after_for@4:
     // src/PuyaContracts/mimc_hasher/contract.py:54
-    // return r
-    frame_dig -1
+    // return k
+    frame_dig 2
     frame_bury 0
     retsub
 
 
 // PuyaContracts.mimc_hasher.contract.mimc7(x: bytes, k: bytes, C: bytes) -> bytes:
 mimc7:
-    // src/PuyaContracts/mimc_hasher/contract.py:13-14
+    // src/PuyaContracts/mimc_hasher/contract.py:12-13
     // @subroutine
     // def mimc7(x: BigUInt, k: BigUInt, C: Bytes) -> BigUInt:
     proto 3 1
     int 0
-    // src/PuyaContracts/mimc_hasher/contract.py:18
-    // t: BigUInt = x + k
+    // src/PuyaContracts/mimc_hasher/contract.py:17
+    // t: BigUInt = (x + k) % P
     frame_dig -3
     frame_dig -2
     b+
-    // src/PuyaContracts/mimc_hasher/contract.py:19
+    // src/PuyaContracts/mimc_hasher/contract.py:14-15
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/mimc_hasher/contract.py:17
+    // t: BigUInt = (x + k) % P
+    b%
+    // src/PuyaContracts/mimc_hasher/contract.py:18
     // for i in urange(91):
-    int 1
-    assert // Step cannot be zero
     int 0
 
 mimc7_for_header@1:
-    // src/PuyaContracts/mimc_hasher/contract.py:19
+    // src/PuyaContracts/mimc_hasher/contract.py:18
     // for i in urange(91):
     frame_dig 2
     int 91
     <
     bz mimc7_after_for@6
-    // src/PuyaContracts/mimc_hasher/contract.py:20
-    // if i > 0:
-    frame_dig 2
-    int 0
-    >
     frame_dig 1
     frame_bury 0
+    // src/PuyaContracts/mimc_hasher/contract.py:19
+    // if i > 0:
+    frame_dig 2
     bz mimc7_after_if_else@4
-    // src/PuyaContracts/mimc_hasher/contract.py:21
+    // src/PuyaContracts/mimc_hasher/contract.py:20
     // const: Bytes = extract(C, 32 * i, 32)
     int 32
     frame_dig 2
     *
     frame_dig -1
-    uncover 1
+    swap
     int 32
     extract3
-    // src/PuyaContracts/mimc_hasher/contract.py:23
+    // src/PuyaContracts/mimc_hasher/contract.py:22
     // t = t + const_bigUint + k
     frame_dig 1
-    uncover 1
     b+
     frame_dig -2
     b+
@@ -321,75 +302,74 @@ mimc7_for_header@1:
 
 mimc7_after_if_else@4:
     frame_dig 0
-    // src/PuyaContracts/mimc_hasher/contract.py:24
+    // src/PuyaContracts/mimc_hasher/contract.py:23
     // tMul = t * t
     dup
     dig 1
     b*
-    // src/PuyaContracts/mimc_hasher/contract.py:15-16
+    // src/PuyaContracts/mimc_hasher/contract.py:14-15
     // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
     // P: BigUInt = BigUInt(b254_r_prime_int)
     byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // src/PuyaContracts/mimc_hasher/contract.py:24
+    // tMul = tMul % P
+    b%
     // src/PuyaContracts/mimc_hasher/contract.py:25
-    // tMul = tMul % P
-    b%
+    // tMul = tMul * t
+    dig 1
+    b*
+    // src/PuyaContracts/mimc_hasher/contract.py:14-15
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
     // src/PuyaContracts/mimc_hasher/contract.py:26
-    // tMul = tMul * t
-    dig 1
-    b*
-    // src/PuyaContracts/mimc_hasher/contract.py:15-16
-    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
-    // P: BigUInt = BigUInt(b254_r_prime_int)
-    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // tMul = tMul % P
+    b%
     // src/PuyaContracts/mimc_hasher/contract.py:27
-    // tMul = tMul % P
-    b%
+    // tMul = tMul * t
+    dig 1
+    b*
+    // src/PuyaContracts/mimc_hasher/contract.py:14-15
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
     // src/PuyaContracts/mimc_hasher/contract.py:28
-    // tMul = tMul * t
-    dig 1
-    b*
-    // src/PuyaContracts/mimc_hasher/contract.py:15-16
-    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
-    // P: BigUInt = BigUInt(b254_r_prime_int)
-    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // tMul = tMul % P
+    b%
     // src/PuyaContracts/mimc_hasher/contract.py:29
-    // tMul = tMul % P
-    b%
+    // tMul = tMul * t
+    dig 1
+    b*
+    // src/PuyaContracts/mimc_hasher/contract.py:14-15
+    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
+    // P: BigUInt = BigUInt(b254_r_prime_int)
+    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
     // src/PuyaContracts/mimc_hasher/contract.py:30
-    // tMul = tMul * t
-    dig 1
-    b*
-    // src/PuyaContracts/mimc_hasher/contract.py:15-16
-    // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
-    // P: BigUInt = BigUInt(b254_r_prime_int)
-    byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
+    // tMul = tMul % P
+    b%
     // src/PuyaContracts/mimc_hasher/contract.py:31
-    // tMul = tMul % P
-    b%
-    // src/PuyaContracts/mimc_hasher/contract.py:32
     // tMul = tMul * t
     dig 1
     b*
-    // src/PuyaContracts/mimc_hasher/contract.py:15-16
+    // src/PuyaContracts/mimc_hasher/contract.py:14-15
     // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
     // P: BigUInt = BigUInt(b254_r_prime_int)
     byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
-    // src/PuyaContracts/mimc_hasher/contract.py:33
+    // src/PuyaContracts/mimc_hasher/contract.py:32
     // tMul = tMul % P
     b%
-    // src/PuyaContracts/mimc_hasher/contract.py:34
+    // src/PuyaContracts/mimc_hasher/contract.py:33
     // tMul = tMul * t
-    uncover 1
     b*
-    // src/PuyaContracts/mimc_hasher/contract.py:15-16
+    // src/PuyaContracts/mimc_hasher/contract.py:14-15
     // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
     // P: BigUInt = BigUInt(b254_r_prime_int)
     byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
-    // src/PuyaContracts/mimc_hasher/contract.py:35
+    // src/PuyaContracts/mimc_hasher/contract.py:34
     // t = tMul % P
     b%
     frame_bury 1
-    // src/PuyaContracts/mimc_hasher/contract.py:19
+    // src/PuyaContracts/mimc_hasher/contract.py:18
     // for i in urange(91):
     frame_dig 2
     int 1
@@ -398,19 +378,19 @@ mimc7_after_if_else@4:
     b mimc7_for_header@1
 
 mimc7_after_for@6:
-    // src/PuyaContracts/mimc_hasher/contract.py:37
+    // src/PuyaContracts/mimc_hasher/contract.py:36
     // result: BigUInt = (t + k) % P
     frame_dig 1
     frame_dig -2
     b+
-    // src/PuyaContracts/mimc_hasher/contract.py:15-16
+    // src/PuyaContracts/mimc_hasher/contract.py:14-15
     // # Fact: t**n MOD P = (t**(n-1) MOD P) * t
     // P: BigUInt = BigUInt(b254_r_prime_int)
     byte 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001
-    // src/PuyaContracts/mimc_hasher/contract.py:37
+    // src/PuyaContracts/mimc_hasher/contract.py:36
     // result: BigUInt = (t + k) % P
     b%
-    // src/PuyaContracts/mimc_hasher/contract.py:39
+    // src/PuyaContracts/mimc_hasher/contract.py:38
     // return result
     frame_bury 0
     retsub
